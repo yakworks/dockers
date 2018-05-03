@@ -6,7 +6,7 @@ USER root
 RUN apk add --no-cache dumb-init git xvfb \
     sudo openssh-client ca-certificates tar gzip parallel \
     net-tools netcat-openbsd unzip zip bzip2 gnupg curl wget \
-    shadow bash gawk sed grep bc coreutils
+    shadow bash gawk sed grep bc coreutils fontconfig ttf-dejavu
 
 # Use unicode
 # RUN locale-gen C.UTF-8 || true
