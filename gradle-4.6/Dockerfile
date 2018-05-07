@@ -8,6 +8,10 @@ RUN apk add --no-cache dumb-init git xvfb \
     net-tools netcat-openbsd unzip zip bzip2 gnupg curl wget \
     shadow bash gawk sed grep bc coreutils
 
+
+#add fontconfig and ttf-dejavu, without this, jasper reports fails, see https://github.com/docker-library/openjdk/issues/73
+RUN apk add --no-cache fontconfig ttf-dejavu    
+
 # Use unicode
 # RUN locale-gen C.UTF-8 || true
 ENV LANG=C.UTF-8
