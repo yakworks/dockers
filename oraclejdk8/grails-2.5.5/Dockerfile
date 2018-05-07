@@ -5,7 +5,7 @@ RUN apk add --no-cache \
     mysql-client && \
     rm -rf /var/cache/apk/*
 
-ENV GRAILS_VERSION=2.5.5
+ENV GRAILS_VERSION=2.5.4
 ENV GRAILS_HOME=$SDKMAN_DIR/candidates/grails/current
 ENV PATH=$GRAILS_HOME/bin:$PATH
 
@@ -15,13 +15,26 @@ sdk flush archives; \
 sdk flush temp "
 
 # smoke test to install default deps
-RUN grails create-app foo \
-	&& cd foo \
+RUN grails create-app foo254 \
+	&& cd foo254 \
 	&& grails compile \
 	&& cd .. \
-	&& rm -rf foo
+	&& rm -rf foo254
 
 
+ENV GRAILS_VERSION=2.5.5
+
+RUN /bin/bash -c "source $SDKMAN_DIR/bin/sdkman-init.sh; \
+sdk install grails $GRAILS_VERSION; \
+sdk flush archives; \
+sdk flush temp "
+
+# smoke test to install default deps
+RUN grails create-app foo255 \
+	&& cd foo255 \
+	&& grails compile \
+	&& cd .. \
+	&& rm -rf foo255
 
 # manual way here for refernce in case sdkman acts up
 # WORKDIR /opt/grails
