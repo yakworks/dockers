@@ -1,2 +1,2 @@
-docker build -t dock9/oraclejdk8:gradle-4.6 .
-docker push dock9/oraclejdk8:gradle-4.6
+docker build -t yakworks/alpine-java:gradle-4.10.3 .
+docker push yakworks/alpine-java:gradle-4.10.3

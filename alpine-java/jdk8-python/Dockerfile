@@ -1,6 +1,5 @@
-FROM dock9/alpine-java:jdk8-cleaned
+FROM yakworks/alpine-java:jdk8-cleaned
 
-USER root
 # Install python3
 RUN apk add --no-cache \
     python3 && \
