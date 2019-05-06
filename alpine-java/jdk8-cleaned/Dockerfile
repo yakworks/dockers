@@ -1,5 +1,6 @@
+FROM frolvlad/alpine-java:jdk8-cleaned
 
-FROM frolvlad/alpine-oraclejdk8:cleaned
+USER root
 
 # Some stuff from CIRCLECI examples and other
 # 'shadow' allows the group and user adds below to work

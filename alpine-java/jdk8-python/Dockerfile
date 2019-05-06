@@ -1,7 +1,7 @@
-FROM dock9/oraclejdk8:slim
+FROM dock9/alpine-java:jdk8-cleaned
 
-# Some stuff from CIRCLECI examples and other
-# 'shadow' allows the group and user adds below to work
+USER root
+# Install python3
 RUN apk add --no-cache \
     python3 && \
     python3 -m ensurepip && \
@@ -13,5 +13,6 @@ RUN apk add --no-cache \
 
 COPY pip-requirements.txt ./
 
-RUN sudo -H pip install -r pip-requirements.txt
+# This installs 
+RUN pip install -r pip-requirements.txt
 
