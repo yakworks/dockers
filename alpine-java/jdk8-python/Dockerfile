@@ -1,5 +1,7 @@
 FROM yakworks/alpine-java:jdk8-cleaned
 
+ENV KUBECTL_VERSION=v1.15.1
+
 # Install python3
 RUN apk add --no-cache \
     python3 && \
@@ -15,3 +17,8 @@ COPY pip-requirements.txt ./
 # This installs 
 RUN pip install -r pip-requirements.txt
 
+# add kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+  mv kubectl /usr/local/bin/kubectl && \
+  chmod +x /usr/local/bin/kubectl && \
+  kubectl version --client
