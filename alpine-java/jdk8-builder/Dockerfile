@@ -4,7 +4,7 @@ FROM yakworks/alpine-java:jdk8-cleaned
 # 'shadow' allows the group and user adds below to work
 RUN apk add --no-cache git sudo openssh-client parallel \
     net-tools netcat-openbsd zip bzip2 gnupg curl \
-    shadow bash gawk bc coreutils \
+    shadow bash gawk bc coreutils make \
     mysql-client && \
     rm -rf /var/cache/apk/*
 
@@ -24,9 +24,10 @@ COPY pip-requirements.txt ./
 RUN pip install -r pip-requirements.txt
 
 ENV KUBECTL_VERSION=v1.15.1
-
 # add kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
   mv kubectl /usr/local/bin/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   kubectl version --client
+
+
