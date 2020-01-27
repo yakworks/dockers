@@ -1,5 +1,6 @@
 FROM microsoft/mssql-server-linux:2017-latest
 
+ENV ACCEPT_EULA=Y
 VOLUME /docker-entrypoint-initdb.d
 EXPOSE 1433
 
