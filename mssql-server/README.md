@@ -4,14 +4,22 @@ based on https://github.com/shanegenschaw/mssql-server-linux
 
 This image is an extension of the official [microsoft/mssql-server-linux](https://hub.docker.com/r/microsoft/mssql-server-linux/) Docker image
 
-It adds functionality to initialize a fresh instance. Similiar to what MySql has availinbale, when a container is started for the first time, it will execute any files with extensions .sh or .sql or restore and .bak that are found in /docker-entrypoint-initdb.d. Files will be executed in alphabetical order. You can easily populate your SQL Server services by mounting scripts into that directory and provide custom images with contributed data.
+It adds functionality to initialize a fresh instance. Similiar to what MySql has available, when a container is started for the first time, it will execute any files with extensions .sh or .sql or restore and .bak that are found in /docker-entrypoint-initdb.d. Files will be executed in alphabetical order. You can easily populate your SQL Server services by mounting scripts into that directory and provide custom images with contributed data.
 
 Will also first gunzip sql files if they end with .sql.gz
 
 ## Restoring Backups with .bak files
 
-Restoring bak files if fast, much faster than running sql to initialize a database. If a file has a .bak extension in `docker-entrypoint-initdb.d` then it will restore a database as the filename without the .bak , so when backing up a database it should be similiar to the setting below.
-For example if you have foo_db.bak it will end up running the following
+Restoring bak files is fast, much faster than running sql to initialize a database. If a file has a .bak extension in `docker-entrypoint-initdb.d` then it will restore a database as the filename without the .bak , so when backing up a database it should be similiar to the setting below.
+
+For example to restore foo_db databse and run sql script on it
+
+1. create directory `docker-entrypoint-initdb.d`
+2. put foo_db.bak file into `docker-entrypoint-initdb.d` directory
+3. put sqlTest.sql file with some sql statements into `docker-entrypoint-initdb.d` directory
+3. run this image as [below](## Running this image) 
+
+Running image will start sql-server docker and then restore foo_db db from foo_db.bak as the following
 
 ```
 sqlcmd -U sa -P $SA_PASSWORD -Q \
@@ -19,6 +27,8 @@ sqlcmd -U sa -P $SA_PASSWORD -Q \
     WITH MOVE 'foo_db' TO '/var/opt/mssql/data/foo_db.mdf', 
     MOVE 'foo_db_log' TO '/var/opt/mssql/data/foo_db_log.ldf'"
 ```
+
+After restore it will run `sqlTest.sql` (or more sql statements in alphabetical order).
 
 ## Running this image
 
