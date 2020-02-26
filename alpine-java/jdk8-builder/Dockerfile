@@ -19,9 +19,8 @@ RUN apk add --no-cache \
     rm -r /root/.cache
 
 COPY pip-requirements.txt ./
-
-# This installs 
 RUN pip install -r pip-requirements.txt
+RUN rm pip-requirements.txt
 
 ENV KUBECTL_VERSION=v1.15.1
 # add kubectl

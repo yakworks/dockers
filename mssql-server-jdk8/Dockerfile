@@ -10,7 +10,7 @@ FROM microsoft/mssql-server-linux:2017-latest
 # adds some files for testing, fontconfig ttf-dejavu are needed for jasper testing 
 # might need to add xvfb
 RUN apt-get update && \ 
-    apt-get -y install unzip git mysql-client fontconfig ttf-dejavu && \
+    apt-get -y install make unzip git mysql-client fontconfig ttf-dejavu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
