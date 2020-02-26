@@ -28,5 +28,3 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL
   mv kubectl /usr/local/bin/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   kubectl version --client
-
-
