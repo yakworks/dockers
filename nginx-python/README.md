@@ -9,8 +9,8 @@ changes default to map to `site` so its easier to run and map volume
 ## Serving static content
 
 to run against the current dir you in
-`$ docker run -p 8000:80 -v $PWD:/site -d yakworks/nginx-python` 
-or `$ docker run -it --rm -p 8000:80 -v $PWD:/site yakworks/nginx-python`
+`docker run -p 8000:80 -v $PWD:/site -d yakworks/nginx-python` 
+or `docker run -it --rm -p 8000:80 -v $PWD:/site yakworks/nginx-python`
 
 Then you can hit http://localhost:8080 or http://host-ip:8080 in your browser.
 
