@@ -6,7 +6,7 @@ FROM nginx:1.15-alpine
 
 # bash because, git to download, gettext for envsubst command, apache2-utils for htpasswd.
 RUN apk update && apk add --no-cache \
-	bash gettext git && \
+	bash gettext apache2-utils && \
     rm -rf /var/cache/apk/*
 
 # Install python3 alpine 3.9 default to 3.6, mkdocs 1.16.3 wont work with version > 3.6, 
@@ -23,9 +23,9 @@ RUN pip install wheel
 
 WORKDIR /opt
 
-COPY nginx-entry.sh ./
 # RUN rm /etc/nginx/conf.d/default.conf 
-COPY default.conf /etc/nginx/conf.d/
+COPY default.conf auth.conf nginx-entry.sh ./
+#COPY default.conf /etc/nginx/conf.d/
 
 # make sure root login is disabled
 # RUN sed -i -e 's/^root::/root:!:/' /etc/shadow

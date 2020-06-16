@@ -31,7 +31,7 @@ $ docker run --name some-nginx -d -p 8080:80 some-content-nginx
 
 Then you can hit http://localhost:8080 or http://host-ip:8080 in your browser.
 
-## onverride config
+## Override Config
 
 if you want to override the default.conf map volume file to the /etc/nginx/conf.d/default.conf
 
@@ -39,5 +39,18 @@ if you want to override the default.conf map volume file to the /etc/nginx/conf.
 docker run -p 8000:80 \
 -v /host/some-content:/site \
 -v /host/default.conf:/etc/nginx/conf.d/default.conf \
+-d yakworks/nginx-python
+```
+
+## With Basic Auth
+
+If a AUTH_USERNAME is passed in then it will use auth.conf to require a login to access
+the site. Takes care of running htpasswd to generate the hash form the AUTH_PASSWORD
+
+```
+docker run -p 8000:80 \
+-e AUTH_USERNAME=guest \
+-e AUTH_PASSWORD=fooBar! \
+-v /host/some-content:/site \
 -d yakworks/nginx-python
 ```
