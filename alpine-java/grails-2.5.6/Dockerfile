@@ -33,4 +33,8 @@ RUN grails create-app foo \
 	&& cd .. \
 	&& rm -rf foo
 
+WORKDIR /opt/jfrog
+RUN curl -fL https://getcli.jfrog.io | sh
+ENV PATH="/opt/jfrog:$PATH"
+
 WORKDIR /project
