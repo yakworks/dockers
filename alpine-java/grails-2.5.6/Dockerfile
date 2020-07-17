@@ -34,7 +34,8 @@ RUN grails create-app foo \
 	&& rm -rf foo
 
 WORKDIR /opt/jfrog
-RUN curl -fL https://getcli.jfrog.io | sh
+RUN curl -XGET https://api.bintray.com/content/jfrog/jfrog-cli-go/1.38.0/jfrog-cli-linux-386/jfrog?bt_package=jfrog-cli-linux-386 -L -k > jfrog && \
+    chmod u+x jfrog
 ENV PATH="/opt/jfrog:$PATH"
 
 WORKDIR /project
