@@ -28,13 +28,5 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
 # 'shadow' allows the group and user adds below to work
 RUN apk add --no-cache git sudo openssh-client parallel \
     net-tools netcat-openbsd zip bzip2 gnupg curl \
-    shadow bash gawk bc coreutils make \
-    mysql-client && \
+    shadow bash gawk bc coreutils make && \
     rm -rf /var/cache/apk/*
-
-ENV KUBECTL_VERSION=v1.17.3
-# add kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
-  mv kubectl /usr/local/bin/kubectl && \
-  chmod +x /usr/local/bin/kubectl && \
-  kubectl version --client
