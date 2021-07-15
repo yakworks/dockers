@@ -1,4 +1,10 @@
-FROM node:lts-alpine3.13
+FROM yakworks/alpine-builder:k8s
+
+RUN apk add --no-cache git npm
+
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n 14
 
 # Installs latest Chromium package.
 RUN apk update && apk upgrade && \
@@ -22,11 +28,3 @@ RUN mkdir -p /usr/src/app \
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/
-
-
-# Some stuff from CIRCLECI examples and other
-# 'shadow' allows the group and user adds below to work
-RUN apk add --no-cache git sudo openssh-client parallel \
-    net-tools netcat-openbsd zip bzip2 gnupg curl \
-    shadow bash gawk bc coreutils make && \
-    rm -rf /var/cache/apk/*

@@ -1,11 +1,10 @@
-FROM alpine:3.11
+FROM yakworks/alpine-builder:k8s
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+# parallel
+RUN apk add --no-cache parallel && \
+    rm -rf /var/cache/apk/*
 
-USER root
-
+# java
 RUN wget --quiet https://cdn.azul.com/public_keys/alpine-signing@azul.com-5d5dc44c.rsa.pub -P /etc/apk/keys/ && \
     echo "https://repos.azul.com/zulu/alpine" >> /etc/apk/repositories && \
     apk --no-cache add zulu8-jdk
@@ -16,10 +15,5 @@ ENV JAVA_HOME=/usr/lib/jvm/zulu8-ca
 RUN apk add --no-cache dumb-init xvfb fontconfig ttf-dejavu && \
     rm -rf /var/cache/apk/*
 
-#sym link jar command
-RUN ln -s /usr/lib/jvm/default-jvm/bin/jar /usr/bin/jar
-
-# Set timezone to UTC by default and add circle user so its always here
-# RUN ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
-
-WORKDIR /project
+# sym link the jar command
+# RUN ln -s /usr/lib/jvm/default-jvm/bin/jar /usr/bin/jar
