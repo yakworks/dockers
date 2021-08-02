@@ -1,4 +1,5 @@
-FROM yakworks/alpine-builder:k8s
+ARG REGISTRY
+FROM $REGISTRY/builder:k8s
 
 RUN apk add --no-cache git npm
 

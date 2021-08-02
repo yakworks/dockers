@@ -1,4 +1,5 @@
-FROM yakworks/alpine-builder:jdk8
+ARG REGISTRY
+FROM $REGISTRY/builder:jdk8
 
 # Install python3
 RUN apk add --no-cache \

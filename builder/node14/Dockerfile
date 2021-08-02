@@ -1,6 +1,7 @@
-FROM yakworks/alpine-builder:3.14
+ARG REGISTRY
+FROM $REGISTRY/builder:node14
 
-RUN apk add --no-cache git npm
+RUN apk add --no-cache npm
 
 RUN npm install npm@latest -g && \
     npm install n -g && \

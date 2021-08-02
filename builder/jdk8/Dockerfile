@@ -1,4 +1,5 @@
-FROM yakworks/alpine-builder:3.14
+ARG REGISTRY
+FROM $REGISTRY/builder:k8s
 
 # parallel
 RUN apk add --no-cache parallel && \
