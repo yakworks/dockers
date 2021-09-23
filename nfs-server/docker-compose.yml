@@ -1,0 +1,24 @@
+version: "3.5"
+services:
+  nfs-server:
+    image: yakworks/nfs-server:3.14
+    container_name: nfs
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - SHARED_DIRECTORY=/data
+    volumes:
+      - /data/docker-volumes:/data
+    ports:
+      - 2049:2049
+
+volumes:
+  my-nfs-share:
+    driver: local
+    driver_opts:
+      type: "nfs4"
+      o: "addr=172.24.0.107,rw"
+      device: ":/mnt/sharedwordpress"
+
+networks:
+  nfs_net:

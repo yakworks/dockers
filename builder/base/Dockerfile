@@ -13,9 +13,10 @@ USER root
 # ncurses - allows pretty console, provides the tput
 # gnupg - the gpg encrypt and decrypt
 # openssh-client - ssh and scp, used in CI
+# gawk - git-secrets wants dockers
 RUN apk add --no-cache bash make curl git \
     zip coreutils ncurses \
-    gnupg openssh-client && \
+    gnupg openssh-client gawk && \
     rm -rf /var/cache/apk/*
 
 # other to be potentially added, some already exist in busybox but might need gnu versions
