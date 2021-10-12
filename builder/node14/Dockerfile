@@ -1,5 +1,5 @@
 ARG REGISTRY
-FROM $REGISTRY/builder:node14
+FROM $REGISTRY/builder:k8s
 
 RUN apk add --no-cache npm
 
