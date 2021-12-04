@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   nfs-server:
-    image: yakworks/nfs-server:3.14
+    image: yakworks/nfs-server:3.15
     container_name: nfs
     restart: unless-stopped
     privileged: true
