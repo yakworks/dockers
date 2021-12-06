@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# This script runs on the NFS server and creates an APP_RESOURCES_DIR if necessary.
+set -e
+
+usage() {
+  echo "Usage: $0 /fully/qualified/app/resources/dir"
+}
+
+[[ $# != 1 ]] && usage && exit 0
+
+APP_RESOURCES_DIR="$1"
+if [[ -d "${APP_RESOURCES_DIR}" ]];then
+  echo "Directory ${APP_RESOURCES_DIR} already exists on nfs. Exiting gleefully with no errors."
+else
+  echo "Creating a new minimal ${APP_RESOURCES_DIR} to be used as /app/resources directory"
+  mkdir -p ${APP_RESOURCES_DIR}/conf
+  chmod -R 0770 ${APP_RESOURCES_DIR}
+  chown -R nobody:users ${APP_RESOURCES_DIR}
+fi
+exit 0

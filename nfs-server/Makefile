@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 MAKEFLAGS += -rR
 
-SLUG_TAG := yakworks/nfs-server:3.14
+SLUG_TAG := yakworks/nfs-server:3.15.1
 
 # double $$ means esacpe it and send to bash as a single $
 # for CI login to docker hub using whats in the env vars $DOCKERHUB_USER $DOCKERHUB_PASSWORD
