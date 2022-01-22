@@ -18,7 +18,7 @@ RUN apk add --no-cache \
     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
     rm -r /root/.cache
 
-ENV KUBECTL_VERSION=v1.17.3
+ENV KUBECTL_VERSION=v1.22.5
 # add kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
   mv kubectl /usr/local/bin/kubectl && \
