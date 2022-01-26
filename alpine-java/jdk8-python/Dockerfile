@@ -23,7 +23,7 @@ COPY pip-requirements.txt ./
 # This installs 
 RUN pip install -r pip-requirements.txt
 
-ENV KUBECTL_VERSION=v1.22.5
+ENV KUBECTL_VERSION=v1.23.3
 
 # add kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
