@@ -1,8 +1,8 @@
 ARG REGISTRY
 FROM $REGISTRY/builder:3.14
 
-ENV HELM_VERSION=3.6.3
-ENV KUBECTL_VERSION=v1.20.8
+ENV HELM_VERSION=3.8.0
+ENV KUBECTL_VERSION=v1.22.6
 
 # kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
