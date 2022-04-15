@@ -1,0 +1,7 @@
+# In .dockerignore
+# Exclude everything first:
+*
+
+# Now un-exclude(include) only the stuff we want
+!entrypoint.sh
+
