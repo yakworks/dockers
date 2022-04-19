@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail # strict mode https://bit.ly/36MvF0T
+set -e
 
 if [ ! "$GITHUB_TOKEN" ]; then
   export GITHUB_TOKEN=$([ -f /etc/bot-secrets/GITHUB_TOKEN ] && cat /etc/bot-secrets/GITHUB_TOKEN)
