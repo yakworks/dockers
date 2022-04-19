@@ -19,14 +19,12 @@ RUN apk add --no-cache bash make curl git \
     gnupg openssh-client gawk && \
     rm -rf /var/cache/apk/*
 
-# other to be potentially added, some already exist in busybox but might need gnu versions
-# net-tools netcat-openbsd gawk grep bzip2 sudo
-# shadow - add the su, login , passwd, etc user stuff
-# sudo - compatibility
 
-# install-git-secret:
-# RUN echo 'https://gitsecret.jfrog.io/artifactory/git-secret-apk/all/main' >> /etc/apk/repositories && \
-#   wget -O /etc/apk/keys/git-secret-apk.rsa.pub 'https://gitsecret.jfrog.io/artifactory/api/security/keypair/public/repositories/git-secret-apk' && \
-#   apk add --update --no-cache git-secret
+ENV SOPS_VERSION=3.7.1
+
+# install sops, used along with GPG for encrypting files and decryopting from vault
+RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux \
+    -o /usr/bin/sops && \
+	chmod +x /usr/bin/sops
 
 WORKDIR /project
