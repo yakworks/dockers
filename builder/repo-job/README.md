@@ -1,0 +1,1 @@
+Simple image based on the base that runs a startup

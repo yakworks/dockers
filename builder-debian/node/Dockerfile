@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16
 
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
@@ -6,23 +6,19 @@ ENV LC_ALL en_US.UTF-8
 
 USER root
 
-RUN apk add --no-cache npm && \
-    npm install npm@latest -g && \
+RUN npm install npm@latest -g && \
     npm install -g pnpm
 
+RUN apt-get -qq update && \
+    apt-get -qq -y --no-install-recommends install \
+    bash make curl git coreutils gnupg openssh-client gawk ca-certificates  && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/\* /tmp/\* /var/tmp/*
 
-# helpfull core tools
-# bash make curl git - for obvious needs
-# zip - to unzip zip files
-# coreutils - adds the cut, tr, etc..
-# ncurses - allows pretty console, provides the tput
-# gnupg - the gpg encrypt and decrypt
-# openssh-client - ssh and scp, used in CI
-# gawk - git-secrets wants dockers
-RUN apk add --no-cache bash make curl git \
-    zip coreutils ncurses \
-    gnupg openssh-client gawk && \
-    rm -rf /var/cache/apk/*
+# RUN apk add --no-cache npm && \
+#     npm install npm@latest -g && \
+#     npm install -g pnpm
+
 
 ENV KUBECTL_VERSION=v1.22.6
 
