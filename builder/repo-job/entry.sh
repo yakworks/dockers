@@ -24,9 +24,9 @@ GITHUB_URL="https://dummy:${GITHUB_TOKEN}@$GITHUB_BASE_URL"
 git clone $GITHUB_URL git-project -b $GITHUB_BRANCH --single-branch --depth 1
 cd git-project
 
-echo "--- calling make $MAKE_BULD_TARGET --"
+echo "--- calling make $MAKE_BUILD_TARGET --"
 
-make "$MAKE_BULD_TARGET"
+make "$MAKE_BUILD_TARGET"
 
 # Ah, ha, ha, ha, stayin' alive...
 # side effect free keep alive
