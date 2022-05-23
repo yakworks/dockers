@@ -1,33 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
-if [ ! "$GITHUB_TOKEN" ]; then
-  export GITHUB_TOKEN=$([ -f /etc/bot-secrets/GITHUB_TOKEN ] && cat /etc/bot-secrets/GITHUB_TOKEN)
+echo "Job started at `date '+%Y%m%d-%H%M%S'`"
+
+[ "$SKIP_CLONE" != "true" ] && source "$(dirname "${BASH_SOURCE[0]}")"/clone.sh
+
+if [ "$MAKE_BUILD_TARGET" ]; then
+  echo "calling MAKE_BUILD_TARGET $MAKE_BUILD_TARGET"
+  make "$MAKE_BUILD_TARGET"
+else
+  echo "calling BUILD_SCRIPT_TARGET $BUILD_SCRIPT_TARGET"
+  eval "$BUILD_SCRIPT_TARGET"
 fi
 
-if [ ! "$GPG_KEY" ]; then
-  export GPG_KEY=$([ -f /etc/bot-secrets/GPG_KEY ] && cat /etc/bot-secrets/GPG_KEY)
-fi
 
-[ ! "$GITHUB_TOKEN" ] && echo "GITHUB_TOKEN must be set" && exit 1
-[ ! "$GPG_KEY" ] && echo "GPG_KEY must be set" && exit 1
-[ ! "$GITHUB_PROJECT" ] && echo "GITHUB_PROJECT must be set" && exit 1
+# # Ah, ha, ha, ha, stayin' alive...
+# # side effect free keep alive
+# # while :; do :; done & kill -STOP $! && wait $!
 
-GITHUB_BASE_URL="github.com/$GITHUB_PROJECT.git"
-GITHUB_URL="https://dummy:${GITHUB_TOKEN}@$GITHUB_BASE_URL"
-
-# set branch to master if not set
-: ${GITHUB_BRANCH:=repo-job}  #XXX change later to master
-
-# clone to /site
-git clone $GITHUB_URL git-project -b $GITHUB_BRANCH --single-branch --depth 1
-cd git-project
-
-echo "--- calling make $MAKE_BUILD_TARGET --"
-
-make "$MAKE_BUILD_TARGET"
-
-# Ah, ha, ha, ha, stayin' alive...
-# side effect free keep alive
-# while :; do :; done & kill -STOP $! && wait $!
+echo "Job finished at `date '+%Y%m%d-%H%M%S'`"

@@ -2,7 +2,8 @@ ARG REGISTRY
 FROM $REGISTRY/builder:3.14
 
 COPY entry.sh /opt/
+COPY clone.sh /opt/
 
-WORKDIR /
+WORKDIR /project
 
-ENTRYPOINT ["/opt/entry.sh"]
+CMD ["/opt/entry.sh"]
