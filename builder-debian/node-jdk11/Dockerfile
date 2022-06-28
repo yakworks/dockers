@@ -1,9 +1,10 @@
-ARG REGISTRY
-FROM $REGISTRY/builder:k8s
+FROM yakworks/bullseye:node
 
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 ARG ZULU_REPO_VER=1.0.0-3
 
+# copied from https://github.com/zulu-openjdk/zulu-openjdk/blob/master/11-latest/Dockerfile
 RUN apt-get -qq update && \
     apt-get -qq -y --no-install-recommends install gnupg software-properties-common locales curl tzdata && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
@@ -13,18 +14,9 @@ RUN apt-get -qq update && \
     apt-get -qq update && \
     apt-get -qq -y dist-upgrade && \
     mkdir -p /usr/share/man/man1 && \
-    echo "Package: zulu8-*\nPin: version 8.0.322-*\nPin-Priority: 1001" > /etc/apt/preferences && \
-    apt-get -qq -y --no-install-recommends install zulu8-jdk=8.0.322-* && \
-    apt-get -qq -y purge gnupg software-properties-common curl && \
+    echo "Package: zulu11-*\nPin: version 11.0.15-*\nPin-Priority: 1001" > /etc/apt/preferences && \
+    apt-get -qq -y --no-install-recommends install zulu11-jdk=11.0.15-* && \
     apt -y autoremove && \
     rm -rf /var/lib/apt/lists/* zulu-repo_${ZULU_REPO_VER}_all.deb
 
-ENV JAVA_HOME=/usr/lib/jvm/zulu8-ca-amd64
-
-# adds in some things needed for java ui and reporting, like fonts
-RUN apt-get -qq update && \
-    apt-get -qq -y --no-install-recommends install \
-    dumb-init xvfb fontconfig fonts-dejavu-core && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/\* /tmp/\* /var/tmp/*
-
+ENV JAVA_HOME=/usr/lib/jvm/zulu11

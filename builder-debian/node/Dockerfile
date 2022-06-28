@@ -1,17 +1,13 @@
-FROM node:16
+FROM node:16-bullseye-slim
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-
-USER root
+ENV LANG C.UTF-8
 
 RUN npm install npm@latest -g && \
     npm install -g pnpm
 
 RUN apt-get -qq update && \
     apt-get -qq -y --no-install-recommends install \
-    bash make curl git coreutils gnupg openssh-client gawk ca-certificates  && \
+    bash make curl coreutils git gnupg openssh-client gawk ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/\* /tmp/\* /var/tmp/*
 
@@ -20,7 +16,7 @@ RUN apt-get -qq update && \
 #     npm install -g pnpm
 
 
-ENV KUBECTL_VERSION=v1.22.6
+ENV KUBECTL_VERSION=v1.23.8
 
 # kubectl
 RUN case `uname -m` in \
@@ -35,7 +31,6 @@ RUN case `uname -m` in \
   mv kubectl /usr/local/bin/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   kubectl version --client
-
 # end kubectl
 
 WORKDIR /project

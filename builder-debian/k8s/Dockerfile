@@ -1,8 +1,7 @@
-ARG REGISTRY
-FROM $REGISTRY/builder:3.14
+FROM yakworks/bullseye:base
 
-ENV HELM_VERSION=3.8.0
-ENV KUBECTL_VERSION=v1.22.6
+# ENV HELM_VERSION=3.8.0
+ENV KUBECTL_VERSION=v1.23.8
 
 # kubectl
 RUN case `uname -m` in \

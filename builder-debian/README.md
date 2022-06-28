@@ -1,4 +1,4 @@
-The alpine images used in pipelines for buidling and deploying
+The debian bullseye images used in pipelines for buidling and deploying
 
 if its `skinny` then its doesn't have the kubectl or helm and is based on the base
 
