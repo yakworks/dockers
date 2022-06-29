@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 export REGISTRY=yakworks
 BASE_URL="$REGISTRY/builder"
-TAG="$BASE_URL:node-jdk8"
+TAG="$BASE_URL:jdk8"
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64  
 #build it locally first

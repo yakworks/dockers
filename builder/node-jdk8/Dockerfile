@@ -1,5 +1,4 @@
-ARG REGISTRY
-FROM $REGISTRY/builder:node
+FROM yakworks/builder:node
 
 # parallel
 RUN apk add --no-cache parallel && \

@@ -24,7 +24,7 @@ RUN apk add --no-cache bash make curl git \
     gnupg openssh-client gawk && \
     rm -rf /var/cache/apk/*
 
-ENV KUBECTL_VERSION=v1.22.6
+ENV KUBECTL_VERSION=v1.23.8
 
 # kubectl
 RUN case `uname -m` in \

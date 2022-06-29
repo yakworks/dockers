@@ -1,5 +1,4 @@
-ARG REGISTRY
-FROM $REGISTRY/builder:k8s
+FROM yakworks/builder:k8s
 
 # parallel
 RUN apk add --no-cache parallel && \
