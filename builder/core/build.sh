@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 export REGISTRY=yakworks
 BASE_URL="$REGISTRY/builder"
-TAG="$BASE_URL:base"
-TAG2="$BASE_URL:3.16"
+TAG="$BASE_URL:core"
+
+# on m1 this sets to build the intel x86 one.
 # export DOCKER_DEFAULT_PLATFORM=linux/amd64  
 
 #build it locally first
 docker build -t $TAG .
-docker tag "$TAG" "$TAG2"
-# push, when arm working do the build x
 # docker push "$TAG"
 
 if [[ "${1}" = "push" ]]; then
@@ -16,7 +15,7 @@ if [[ "${1}" = "push" ]]; then
     docker buildx build \
     --push \
     --platform linux/arm64,linux/amd64 \
-    --tag $TAG --tag $TAG2 .
+    --tag $TAG .
 
     echo "**** pushed $TAG"
 fi

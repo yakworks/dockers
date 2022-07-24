@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 export REGISTRY=yakworks
-BASE_URL="$REGISTRY/playwright"
-TAG="$BASE_URL:1.22.2"
+BASE_URL="$REGISTRY/alpine-jre"
+TAG="$BASE_URL:11"
 
-# only need the one for circle, doesnt need to be arm
 export DOCKER_DEFAULT_PLATFORM=linux/amd64  
 
 #build it locally first
 docker build -t $TAG .
-docker push $TAG
+# push, when arm working do the build x
+docker push "$TAG"
+
+# when we can install arm do this so works on mac M1
 # docker buildx build \
 # --push \
 # --platform linux/arm64,linux/amd64 \

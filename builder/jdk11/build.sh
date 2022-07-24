@@ -4,13 +4,12 @@ BASE_URL="$REGISTRY/builder"
 TAG="$BASE_URL:jdk11"
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64  
-
 #build it locally first
 docker build -t $TAG .
-docker push "$TAG"
 
-# when zulu java is working on arm64 do this
-# docker buildx build \
-# --push \
-# --platform linux/arm64,linux/amd64 \
-# --tag $TAG .
+if [[ "${1}" = "push" ]]; then
+    # only work for x86 right now, 
+    # push, when zulu has arm working on alpine do the buildx like others
+    docker push "$TAG"
+    echo "**** pushed $TAG"
+fi

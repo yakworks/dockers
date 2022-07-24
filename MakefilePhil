@@ -1,24 +1,15 @@
-
-# WORK IN PROGRESS based on https://github.com/philpep/dockerfiles
-DOCKERFILES=$(shell find builder -type f -name Dockerfile)
+DOCKERFILES=$(shell find * -type f -name Dockerfile)
 NAMES=$(subst /,\:,$(subst /Dockerfile,,$(DOCKERFILES)))
-REGISTRY?=yakworks
+REGISTRY?=r.in.philpep.org
 IMAGES=$(addprefix $(subst :,\:,$(REGISTRY))/,$(NAMES))
 DEPENDS=.depends.mk
 MAKEFLAGS += -rR
-
-# $(info NAMES $(NAMES))
-.DEFAULT_GOAL := help
-
-print-%:
-	@echo '$*=$($*)'
 
 .PHONY: all clean push pull run exec check checkrebuild pull-base ci $(NAMES) $(IMAGES)
 
 all: $(NAMES)
 
 help:
-	@echo "!!!!!!DO NOT USE YET!!!!!!"
 	@echo "A smart Makefile for your dockerfiles"
 	@echo ""
 	@echo "Read all Dockerfile within the current directory and generate dependendies automatically."
@@ -41,11 +32,8 @@ clean:
 	rm -f $(DEPENDS)
 
 pull-base:
-	# used by debian:buster-slim
-	docker pull debian:buster-slim
-	# used by keycloak
-	docker pull jboss/keycloak:14.0.0
-	# imago
+	docker pull debian:bullseye-slim
+	docker pull quay.io/keycloak/keycloak:16.1.1
 	docker pull philpep/imago
 
 ci:
@@ -53,7 +41,7 @@ ci:
 
 .PHONY: $(DEPENDS)
 $(DEPENDS): $(DOCKERFILES)
-	@grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
+	grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
 		awk -F '/Dockerfile:FROM \\$$REGISTRY/' '{ print $$1 " " $$2 }' | \
 		sed 's@[:/]@\\:@g' | awk '{ print "$(subst :,\\:,$(REGISTRY))/" $$1 ": " "$(subst :,\\:,$(REGISTRY))/" $$2 }' > $@
 

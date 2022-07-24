@@ -1,1 +1,0 @@
-adds jdk and some needed font and rendering utils to k8s
