@@ -49,8 +49,8 @@ else ifeq (run,$(filter run,$(MAKECMDGOALS)))
  DCMD = run
 else ifeq (run-sh,$(filter run-sh,$(MAKECMDGOALS)))
  DCMD = run-sh
-else ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
- DCMD = pull
+else ifeq (push,$(filter push,$(MAKECMDGOALS)))
+ DCMD = push
 endif
 
 dummy_targets = run run-sh check pull push buildx checkrebuild
@@ -95,20 +95,34 @@ bullseye.push: $(bullseye_deps)
 
 FNAMES = foo\:core foo\:base
 FIMAGES = build/demo/foo\:core build/demo/foo\:base
+FIMAGES_BUILDX = $(addsuffix .buildx,$(FIMAGES))
 FIMAGES_PUSH = $(addsuffix .push,$(FIMAGES))
 
 build/demo/foo\:core: build/demo/foo\:base
 
-$(FNAMES): %: build/demo/%
+$(FNAMES): %: build/demo/%.$(DCMD)
 	# fired when deps are done
-	$(logr) $@
+	if [[ $(DCMD) = push ]]; then
+		$(logr) "$@ PUSH"
+		# $(MAKE) build/demo/$@.push
+	else
+		$(logr) "$@ BUILDX"
+	fi
 	echo "$*"
 
-$(FIMAGES): build/%:
+# sets up the yakworks/image:tag.buildx targets
+$(FIMAGES_BUILDX): build/%:
 	$(logr) $@
 	echo "$*"
-	touch $@
+	# install used instead of touch as it creates the parent dirs see https://stackoverflow.com/a/24675139/6500859
+	install -Dv /dev/null $@
 
+# sets up the yakworks/image:tag.push targets
 $(FIMAGES_PUSH): build/%:
 	$(logr) $@
 	echo "$*"
+	install -Dv /dev/null $@
+
+build/circle/jdk11: circle/jdk11/Dockerfile
+	echo "DID IT"
+	install -Dv /dev/null $@
