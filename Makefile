@@ -13,7 +13,7 @@ REGISTRY ?= yakworks
 REGISTRY_BUILD ?= build/$(REGISTRY)
 IMAGES = $(addprefix $(subst :,\:,$(REGISTRY_BUILD))/,$(NAMES))
 DEPENDS = .depends.mk
-PLATFORMS = linux/arm64,linux/amd64
+export PLATFORMS = linux/arm64,linux/amd64
 
 # bullseye_deps = $(shell awk '/^$(REGISTRY)\/bullseye/{ sub(/:$$/, "", $$1); print $$1 }' .depends.mk )
 # bullseye_deps += bullseye\:jre11 bullseye\:postgres14-jdk11
@@ -45,6 +45,7 @@ dummy_targets = run shell check pull push buildx checkrebuild
 .PHONY: $(dummy_targets)
 
 $(NAMES): %: $(REGISTRY_BUILD)/%
+	echo "running $@"
  ifeq (run,$(filter run,$(MAKECMDGOALS)))
 	docker run --rm -it $<
  endif
@@ -56,24 +57,30 @@ $(NAMES): %: $(REGISTRY_BUILD)/%
  endif
 
 
-build/$(IMAGES): docker_dir=$(subst :,/,$(subst $(REGISTRY)/,,$@))
-build/$(IMAGES):
+build/$(IMAGES): $(REGISTRY_BUILD)/%:
+	# replace colon with a / to get to the dir
+	docker_dir=$(subst :,/,$*)
  ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
-	docker pull $@
+	docker pull $*
  endif
  ifeq (buildx,$(filter buildx,$(MAKECMDGOALS)))
-	$(logr) "building $@ in $(docker_dir)"
-	docker build --build-arg REGISTRY=$(REGISTRY) -t $@ $(docker_dir)
-	docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --platform $(PLATFORMS) -t $@ $(DF_DIR)
+	$(logr) "building $* in $$docker_dir"
+	docker build --build-arg REGISTRY=$(REGISTRY) -t $* $$docker_dir
+	# docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --platform $(PLATFORMS) -t $* $$docker_dir
  endif
  ifeq (push,$(filter push,$(MAKECMDGOALS)))
 	$(logr) "docker push $@"
-	docker buildx build --push --platform $(PLATFORMS) -t $@ $(docker_dir)
+	docker buildx build --push --platform $(PLATFORMS) -t $@ "$$docker_dir"
  endif
  ifeq (checkrebuild,$(filter checkrebuild,$(MAKECMDGOALS)))
 	which duuh >/dev/null || (>&2 echo "checkrebuild require duuh command to be installed in PATH" && exit 1)
 	duuh $@ || (docker build --build-arg REGISTRY=$(REGISTRY) --no-cache -t $@ $(subst :,/,$(subst $(REGISTRY)/,,$@)) && duuh $@)
  endif
+
+build/push/$(IMAGES): $(REGISTRY_BUILD)/%:
+	docker_dir=$(subst :,/,$*)
+	$(logr) "docker push $*"
+	docker buildx build --push --platform $(PLATFORMS) -t $* "$$docker_dir"
 
 ## build all the debian bullseye targets
 bullseye.all: $(bullseye_deps)
