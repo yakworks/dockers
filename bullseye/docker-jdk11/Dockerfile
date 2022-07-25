@@ -1,4 +1,5 @@
-FROM yakworks/bullseye:jdk11
+ARG REGISTRY=yakworks
+FROM $REGISTRY/bullseye:jdk11
 
 # Used for building Dockers on CI
 # https://docs.docker.com/engine/install/debian/

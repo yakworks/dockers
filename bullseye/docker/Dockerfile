@@ -1,4 +1,5 @@
-FROM yakworks/bullseye:core
+ARG REGISTRY=yakworks
+FROM $REGISTRY/bullseye:core
 
 # Used for building Dockers on CI
 # https://docs.docker.com/engine/install/debian/

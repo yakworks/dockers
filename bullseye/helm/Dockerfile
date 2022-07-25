@@ -1,4 +1,5 @@
-FROM yakworks/bullseye:core
+ARG REGISTRY=yakworks
+FROM $REGISTRY/bullseye:core
 
 ENV HELM_VERSION=3.8.0
 # ENV KUBECTL_VERSION=v1.23.8
