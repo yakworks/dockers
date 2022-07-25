@@ -34,6 +34,7 @@ grepdeps: $(DOCKERFILES)
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES)
 
 .PHONY: $(DEPENDS)
+# depends fires on every make call to build the .depends.mk, so needs to happen first before the others
 $(DEPENDS): $(DOCKERFILES)
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
 		awk -F '/Dockerfile:FROM \\$$REGISTRY/' '{ print $$1 " " $$2 }' | \
@@ -41,25 +42,28 @@ $(DEPENDS): $(DOCKERFILES)
 
 sinclude $(DEPENDS)
 
-dummy_targets = run shell check pull push buildx checkrebuild
+export DCMD ?= buildx
+ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
+ DCMD = pull
+else ifeq (run,$(filter run,$(MAKECMDGOALS)))
+ DCMD = run
+else ifeq (run-sh,$(filter run-sh,$(MAKECMDGOALS)))
+ DCMD = run-sh
+else ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
+ DCMD = pull
+endif
+
+dummy_targets = run run-sh check pull push buildx checkrebuild
 .PHONY: $(dummy_targets)
 
+# name short cut so
 $(NAMES): %: $(REGISTRY_BUILD)/%
 	echo "running $@"
- ifeq (run,$(filter run,$(MAKECMDGOALS)))
-	docker run --rm -it $<
- endif
- ifeq (shell,$(filter shell,$(MAKECMDGOALS)))
-	docker run --rm -it $< /bin/bash
- endif
- ifeq (check,$(filter check,$(MAKECMDGOALS)))
-	duuh $<
- endif
 
-
-build/$(IMAGES): $(REGISTRY_BUILD)/%:
+$(IMAGES): $(REGISTRY_BUILD)/%:
 	# replace colon with a / to get to the dir
 	docker_dir=$(subst :,/,$*)
+	# if [[ $(DCMD) = pull ]]
  ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
 	docker pull $*
  endif
@@ -77,11 +81,6 @@ build/$(IMAGES): $(REGISTRY_BUILD)/%:
 	duuh $@ || (docker build --build-arg REGISTRY=$(REGISTRY) --no-cache -t $@ $(subst :,/,$(subst $(REGISTRY)/,,$@)) && duuh $@)
  endif
 
-build/push/$(IMAGES): $(REGISTRY_BUILD)/%:
-	docker_dir=$(subst :,/,$*)
-	$(logr) "docker push $*"
-	docker buildx build --push --platform $(PLATFORMS) -t $* "$$docker_dir"
-
 ## build all the debian bullseye targets
 bullseye.all: $(bullseye_deps)
 	for t in base core helm jdk11 jre11 postgres14-jdk11; do
@@ -94,12 +93,22 @@ bullseye.push: $(bullseye_deps)
 		$(MAKE) push yakworks/bullseye:$$t
 	done
 
-# build/wtf:
-# 	$(logr)  "build/wtf ran"
-# 	touch build/wtf
-z:
-	echo foo
+FNAMES = foo\:core foo\:base
+FIMAGES = build/demo/foo\:core build/demo/foo\:base
+FIMAGES_PUSH = $(addsuffix .push,$(FIMAGES))
 
-build/%: %
-	$(logr)  "$@ running, calling  $*"
+build/demo/foo\:core: build/demo/foo\:base
+
+$(FNAMES): %: build/demo/%
+	# fired when deps are done
+	$(logr) $@
+	echo "$*"
+
+$(FIMAGES): build/%:
+	$(logr) $@
+	echo "$*"
 	touch $@
+
+$(FIMAGES_PUSH): build/%:
+	$(logr) $@
+	echo "$*"
