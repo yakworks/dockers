@@ -10,7 +10,8 @@ INCLUDE_DIRS = builder bullseye
 DOCKERFILES = $(shell find $(INCLUDE_DIRS) -type f -name 'Dockerfile')
 NAMES = $(subst /,\:,$(subst /Dockerfile,,$(DOCKERFILES)))
 REGISTRY ?= yakworks
-IMAGES = $(addprefix $(subst :,\:,$(REGISTRY))/,$(NAMES))
+REGISTRY_BUILD ?= build/$(REGISTRY)
+IMAGES = $(addprefix $(subst :,\:,$(REGISTRY_BUILD))/,$(NAMES))
 DEPENDS = .depends.mk
 PLATFORMS = linux/arm64,linux/amd64
 
@@ -36,14 +37,14 @@ grepdeps: $(DOCKERFILES)
 $(DEPENDS): $(DOCKERFILES)
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
 		awk -F '/Dockerfile:FROM \\$$REGISTRY/' '{ print $$1 " " $$2 }' | \
-		sed 's@[:/]@\\:@g' | awk '{ print "$(subst :,\\:,$(REGISTRY))/" $$1 ": " "$(subst :,\\:,$(REGISTRY))/" $$2 }' > $@
+		sed 's@[:/]@\\:@g' | awk '{ print "$(subst :,\\:,$(REGISTRY_BUILD))/" $$1 ": " "$(subst :,\\:,$(REGISTRY_BUILD))/" $$2 }' > $@
 
 sinclude $(DEPENDS)
 
 dummy_targets = run shell check pull push buildx checkrebuild
 .PHONY: $(dummy_targets)
 
-$(NAMES): %: $(REGISTRY)/%
+$(NAMES): %: $(REGISTRY_BUILD)/%
  ifeq (run,$(filter run,$(MAKECMDGOALS)))
 	docker run --rm -it $<
  endif
@@ -55,19 +56,19 @@ $(NAMES): %: $(REGISTRY)/%
  endif
 
 
-$(IMAGES): DF_DIR=$(subst :,/,$(subst $(REGISTRY)/,,$@))
-$(IMAGES):
+build/$(IMAGES): docker_dir=$(subst :,/,$(subst $(REGISTRY)/,,$@))
+build/$(IMAGES):
  ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
 	docker pull $@
  endif
  ifeq (buildx,$(filter buildx,$(MAKECMDGOALS)))
-	$(logr) "building $@ in $(DF_DIR)"
-	docker build --build-arg REGISTRY=$(REGISTRY) -t $@ $(DF_DIR)
+	$(logr) "building $@ in $(docker_dir)"
+	docker build --build-arg REGISTRY=$(REGISTRY) -t $@ $(docker_dir)
 	docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --platform $(PLATFORMS) -t $@ $(DF_DIR)
  endif
  ifeq (push,$(filter push,$(MAKECMDGOALS)))
 	$(logr) "docker push $@"
-	docker buildx build --push --platform $(PLATFORMS) -t $@ $(DF_DIR)
+	docker buildx build --push --platform $(PLATFORMS) -t $@ $(docker_dir)
  endif
  ifeq (checkrebuild,$(filter checkrebuild,$(MAKECMDGOALS)))
 	which duuh >/dev/null || (>&2 echo "checkrebuild require duuh command to be installed in PATH" && exit 1)
