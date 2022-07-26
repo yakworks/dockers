@@ -1,1 +1,0 @@
-docker run -it --rm -v $PWD:/project yakworks/bullseye:base /bin/bash

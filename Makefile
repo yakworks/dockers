@@ -8,12 +8,17 @@ include $(SHIPKIT_DIR)/makefiles/vault.make
 
 INCLUDE_DIRS = builder bullseye
 DOCKERFILES = $(shell find $(INCLUDE_DIRS) -type f -name 'Dockerfile')
-NAMES = $(subst /,\:,$(subst /Dockerfile,,$(DOCKERFILES)))
+NAMES = $(subst /Dockerfile,,$(DOCKERFILES))
 REGISTRY ?= yakworks
 REGISTRY_BUILD ?= build/$(REGISTRY)
-IMAGES = $(addprefix $(subst :,\:,$(REGISTRY_BUILD))/,$(NAMES))
+IMAGES = $(addprefix $(REGISTRY_BUILD)/,$(NAMES))
+IMAGES_BUILD = $(addsuffix .build,$(IMAGES))
+IMAGES_PUSH = $(addsuffix .push,$(IMAGES))
 DEPENDS = .depends.mk
 export PLATFORMS = linux/arm64,linux/amd64
+# echo "fuzz/foo/bar" | /usr/bin/sed -r 's|(.*)/|\1:|'
+# param expansion
+# echo ${V%/*}:${V\#\#*/}
 
 # bullseye_deps = $(shell awk '/^$(REGISTRY)\/bullseye/{ sub(/:$$/, "", $$1); print $$1 }' .depends.mk )
 # bullseye_deps += bullseye\:jre11 bullseye\:postgres14-jdk11
@@ -38,11 +43,12 @@ grepdeps: $(DOCKERFILES)
 $(DEPENDS): $(DOCKERFILES)
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
 		awk -F '/Dockerfile:FROM \\$$REGISTRY/' '{ print $$1 " " $$2 }' | \
-		sed 's@[:/]@\\:@g' | awk '{ print "$(subst :,\\:,$(REGISTRY_BUILD))/" $$1 ": " "$(subst :,\\:,$(REGISTRY_BUILD))/" $$2 }' > $@
+		sed 's@[:]@/@g' | \
+		awk '{ print "$(REGISTRY_BUILD)/" $$1 ".build: " "$(REGISTRY_BUILD)/" $$2 ".build"}' > $@
 
 sinclude $(DEPENDS)
 
-export DCMD ?= buildx
+export DCMD ?= build
 ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
  DCMD = pull
 else ifeq (run,$(filter run,$(MAKECMDGOALS)))
@@ -56,73 +62,44 @@ endif
 dummy_targets = run run-sh check pull push buildx checkrebuild
 .PHONY: $(dummy_targets)
 
-# name short cut so
-$(NAMES): %: $(REGISTRY_BUILD)/%
-	echo "running $@"
+define SET_TAG_NAME =
+ TAG_NAME=$$(echo  "$*" | sed -r 's|(.*)/|\1:|')
+ TAG_NAME="$(REGISTRY)/$$TAG_NAME"
+ $(logr) "TAG_NAME: $$TAG_NAME"
+endef
 
-$(IMAGES): $(REGISTRY_BUILD)/%:
-	# replace colon with a / to get to the dir
-	docker_dir=$(subst :,/,$*)
-	# if [[ $(DCMD) = pull ]]
- ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
-	docker pull $*
- endif
- ifeq (buildx,$(filter buildx,$(MAKECMDGOALS)))
-	$(logr) "building $* in $$docker_dir"
-	docker build --build-arg REGISTRY=$(REGISTRY) -t $* $$docker_dir
+# shortcut names so can call `make bullseye/base` for example
+$(NAMES): %: $(REGISTRY_BUILD)/%.build
+	$(SET_TAG_NAME)
+	if [[ $(DCMD) = push ]]; then
+		$(MAKE) $(REGISTRY_BUILD)/$*.push
+	elif [[ $(DCMD) = run ]]; then
+		docker run --rm -it $$TAG_NAME
+	fi
+# sets up the yakworks/image/tag.build targets
+$(IMAGES_BUILD): $(REGISTRY_BUILD)/%.build: %/Dockerfile
+	$(SET_TAG_NAME)
+	docker build --build-arg REGISTRY=$(REGISTRY) -t $$TAG_NAME $*
 	# docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --platform $(PLATFORMS) -t $* $$docker_dir
- endif
- ifeq (push,$(filter push,$(MAKECMDGOALS)))
-	$(logr) "docker push $@"
-	docker buildx build --push --platform $(PLATFORMS) -t $@ "$$docker_dir"
- endif
- ifeq (checkrebuild,$(filter checkrebuild,$(MAKECMDGOALS)))
-	which duuh >/dev/null || (>&2 echo "checkrebuild require duuh command to be installed in PATH" && exit 1)
-	duuh $@ || (docker build --build-arg REGISTRY=$(REGISTRY) --no-cache -t $@ $(subst :,/,$(subst $(REGISTRY)/,,$@)) && duuh $@)
- endif
+	# install used instead of touch as it creates the parent dirs see https://stackoverflow.com/a/24675139/6500859
+	install -Dv /dev/null $@
+	$(logr.done) "$*"
+
+# sets up the yakworks/image:tag.push targets
+$(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
+	$(SET_TAG_NAME)
+	docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --push --platform $(PLATFORMS) -t $$TAG_NAME $*
+	install -Dv /dev/null $@
+	$(logr.done) "$*"
 
 ## build all the debian bullseye targets
-bullseye.all: $(bullseye_deps)
-	for t in base core helm jdk11 jre11 postgres14-jdk11; do
-		$(MAKE) buildx yakworks/bullseye:$$t
+bullseye.build-all:
+	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
+		$(MAKE) bullseye/$$t
 	done
 
 ## builds and pushes all the debian bullseye targets
-bullseye.push: $(bullseye_deps)
-	for t in base core helm jdk11 jre11 postgres14-jdk11; do
-		$(MAKE) push yakworks/bullseye:$$t
+bullseye.push-all:
+	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
+		$(MAKE) bullseye/$$t push
 	done
-
-FNAMES = foo\:core foo\:base
-FIMAGES = build/demo/foo\:core build/demo/foo\:base
-FIMAGES_BUILDX = $(addsuffix .buildx,$(FIMAGES))
-FIMAGES_PUSH = $(addsuffix .push,$(FIMAGES))
-
-build/demo/foo\:core: build/demo/foo\:base
-
-$(FNAMES): %: build/demo/%.$(DCMD)
-	# fired when deps are done
-	if [[ $(DCMD) = push ]]; then
-		$(logr) "$@ PUSH"
-		# $(MAKE) build/demo/$@.push
-	else
-		$(logr) "$@ BUILDX"
-	fi
-	echo "$*"
-
-# sets up the yakworks/image:tag.buildx targets
-$(FIMAGES_BUILDX): build/%:
-	$(logr) $@
-	echo "$*"
-	# install used instead of touch as it creates the parent dirs see https://stackoverflow.com/a/24675139/6500859
-	install -Dv /dev/null $@
-
-# sets up the yakworks/image:tag.push targets
-$(FIMAGES_PUSH): build/%:
-	$(logr) $@
-	echo "$*"
-	install -Dv /dev/null $@
-
-build/circle/jdk11: circle/jdk11/Dockerfile
-	echo "DID IT"
-	install -Dv /dev/null $@

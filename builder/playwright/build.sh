@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-export REGISTRY=yakworks
-BASE_URL="$REGISTRY/playwright"
-TAG="$BASE_URL:1.22.2"
+TAG="yakworks/playwright:1.22.2"
 
 # only need the one for circle, doesnt need to be arm
-export DOCKER_DEFAULT_PLATFORM=linux/amd64  
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
 #build it locally first
 docker build -t $TAG .

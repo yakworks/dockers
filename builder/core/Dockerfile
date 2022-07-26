@@ -1,6 +1,6 @@
 FROM yakworks/builder:base
 
-# KEEP UNDER 100mb compressed. 
+# KEEP UNDER 100mb compressed.
 # python - so we can script with it
 # httpie - helpful replacement for curl
 # sops
@@ -22,15 +22,15 @@ RUN pip3 install httpie
 
 # Install node16, npm and googles zx for scripts https://github.com/google/zx
 # adds about 25mb to compressed img size
-RUN apk add --no-cache nodejs=16.15.0-r1 && \
+RUN apk add --no-cache nodejs=16.16.0-r0 && \
     apk add --no-cache npm && \
     npm i -g zx && \
     npm i -g pnpm && \
-    rm -rf /var/cache/apk/* 
+    rm -rf /var/cache/apk/*
     # npm cache clean --force
 
 # install sops, used along with GPG for encrypting files and decryopting from vault
-# fairly heavy at 32mb but we use it to decypt vault so its in base image. 
+# fairly heavy at 32mb but we use it to decypt vault so its in base image.
 ENV SOPS_VERSION=3.7.1
 RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux \
     -o /usr/bin/sops && \

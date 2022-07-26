@@ -1,5 +1,6 @@
 FROM debian:bullseye-slim
 
+
 # KEEP UNDER 100mb compressed. add new tools into an image based on this if it will go past that.
 # Add the following core tools.
 # The attempt is made to keep this to a minimum.
@@ -10,7 +11,6 @@ FROM debian:bullseye-slim
 # gnupg - the gpg encrypt and decrypt
 # openssh-client - ssh and scp, used in CI
 # gawk - git-secrets wants dockers
-
 # debian bullseye already has bash and coreutils
 ENV LANG C.UTF-8
 
@@ -19,8 +19,7 @@ RUN for i in $(seq 1 8); do mkdir -p /usr/share/man/man$i; done
 RUN echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf && \
     echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf
 
-RUN apt-get -qq -y update && \
-    apt-get -qq -y --no-install-suggests --no-install-recommends install \
+RUN apt-get -y update && apt-get -y install \
     make \
     curl \
     git \

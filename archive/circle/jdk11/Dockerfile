@@ -28,13 +28,13 @@ RUN pip3 install --upgrade pip setuptools wheel httpie && \
 #     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
 # install sops, used along with GPG for encrypting files and decryopting from vault
-# fairly heavy at aprox 15mb compressed but we use it to decypt vault so its in base image. 
+# fairly heavy at aprox 15mb compressed but we use it to decypt vault so its in base image.
 ENV SOPS_VERSION=3.7.1
 RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux \
     -o /usr/bin/sops && \
     chmod +x /usr/bin/sops
 
-# kubectl aprox 15mb compressed 
+# kubectl aprox 15mb compressed
 ENV KUBECTL_VERSION=v1.23.8
 RUN case `uname -m` in \
         x86_64) ARCH=amd64; ;; \
@@ -48,3 +48,4 @@ RUN case `uname -m` in \
   mv kubectl /usr/local/bin/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   kubectl version --client
+
