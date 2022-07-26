@@ -56,8 +56,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
     bash-completion && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
-RUN echo ". /etc/bash_completion" >> /root/.bashrc && \
-    echo "shopt -u extglob" >> /root/.bashrc && \
+RUN echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc && \
     echo "alias ll='ls -lahG'" >> /root/.bashrc && \
     echo "alias gw='./gradlew'" >> /root/.bashrc && \
     echo "alias m='make'" >> /root/.bashrc

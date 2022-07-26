@@ -4,4 +4,5 @@ build/yakworks/bullseye/jdk11.build: build/yakworks/bullseye/core.build
 build/yakworks/bullseye/docker-jdk11.build: build/yakworks/bullseye/jdk11.build
 build/yakworks/bullseye/docker.build: build/yakworks/bullseye/core.build
 build/yakworks/bullseye/core.build: build/yakworks/bullseye/base.build
+build/yakworks/bullseye/dev.build: build/yakworks/bullseye/jdk11.build
 build/yakworks/bullseye/helm.build: build/yakworks/bullseye/core.build
