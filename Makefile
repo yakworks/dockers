@@ -15,10 +15,7 @@ IMAGES = $(addprefix $(REGISTRY_BUILD)/,$(NAMES))
 IMAGES_BUILD = $(addsuffix .build,$(IMAGES))
 IMAGES_PUSH = $(addsuffix .push,$(IMAGES))
 DEPENDS = .depends.mk
-export PLATFORMS = linux/arm64,linux/amd64
-# echo "fuzz/foo/bar" | /usr/bin/sed -r 's|(.*)/|\1:|'
-# param expansion
-# echo ${V%/*}:${V\#\#*/}
+PLATFORMS ?= linux/arm64,linux/amd64
 
 # bullseye_deps = $(shell awk '/^$(REGISTRY)\/bullseye/{ sub(/:$$/, "", $$1); print $$1 }' .depends.mk )
 # bullseye_deps += bullseye\:jre11 bullseye\:postgres14-jdk11
@@ -80,7 +77,6 @@ $(NAMES): %: $(REGISTRY_BUILD)/%.build
 $(IMAGES_BUILD): $(REGISTRY_BUILD)/%.build: %/Dockerfile
 	$(SET_TAG_NAME)
 	docker build --build-arg REGISTRY=$(REGISTRY) -t $$TAG_NAME $*
-	# docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --platform $(PLATFORMS) -t $* $$docker_dir
 	# install used instead of touch as it creates the parent dirs see https://stackoverflow.com/a/24675139/6500859
 	install -Dv /dev/null $@
 	$(logr.done) "$*"
@@ -88,7 +84,15 @@ $(IMAGES_BUILD): $(REGISTRY_BUILD)/%.build: %/Dockerfile
 # sets up the yakworks/image:tag.push targets
 $(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
 	$(SET_TAG_NAME)
-	docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) --push --platform $(PLATFORMS) -t $$TAG_NAME $*
+	# if the DOCKER_DEFAULT_PLATFORM is set then let it use that and dont use buildx
+	if [[ $${DOCKER_DEFAULT_PLATFORM:-} ]]; then
+		# assumes its built already
+		docker push "$$TAG_NAME"
+	else
+		docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) \
+				 --push --platform $(PLATFORMS) -t $$TAG_NAME $*
+	fi
+
 	install -Dv /dev/null $@
 	$(logr.done) "$*"
 
@@ -100,6 +104,18 @@ bullseye.build-all:
 
 ## builds and pushes all the debian bullseye targets
 bullseye.push-all:
-	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
+	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11 dev; do
 		$(MAKE) bullseye/$$t push
 	done
+
+## the builder images are arm & amd for base and core, but java images only amd platform
+builder.build-all:
+	# core will build base as well
+	$(MAKE) builder/core $(DMCD)
+	for t in jdk11; do
+		DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/$$t $(DMCD)
+	done
+
+## no arm on alpine java images. Set DOCKER_DEFAULT_PLATFORM
+builder.java11:
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/java11 $(DMCD)

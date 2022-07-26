@@ -1,4 +1,5 @@
-FROM yakworks/builder:core
+ARG REGISTRY=yakworks
+FROM $REGISTRY/builder:core
 
 # parallel - for parralel processing add about 15mb compressed
 # dumb-init - see https://github.com/Yelp/dumb-init

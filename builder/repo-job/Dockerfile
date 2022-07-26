@@ -1,5 +1,5 @@
-ARG REGISTRY
-FROM $REGISTRY/builder:3.14
+ARG REGISTRY=yakworks
+FROM $REGISTRY/builder:core
 
 COPY entry.sh /opt/
 COPY clone.sh /opt/

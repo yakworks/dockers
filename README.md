@@ -8,7 +8,9 @@ For example the `bullseye/base` dir in this project publishes to [this docker hu
 
 - `make bullseye/base`, `make bullseye/core`, etc... too build the base images locally. This will not push it. 
 - `make bullseye/base push`, `make bullseye/jdk11 push`, etc.. will build and push the images in both amd64 and arm64 platforms
-- `make bullseye/build-all` will rebuild all of them
+- `make bullseye.build-all` will rebuild all of them, `make bullseye.build-all push` will build and push
+- `make bulder.build-all` will rebuild all of them, `make bullseye.build-all push` will build and push.
+  the java ones will only support amd64 platform
 
 ~~~yaml
 ├── alpine-jre         # base image for spring/java deployments

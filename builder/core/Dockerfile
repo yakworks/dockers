@@ -1,4 +1,5 @@
-FROM yakworks/builder:base
+ARG REGISTRY=yakworks
+FROM $REGISTRY/builder:base
 
 # KEEP UNDER 100mb compressed.
 # python - so we can script with it
