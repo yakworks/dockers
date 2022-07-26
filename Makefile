@@ -112,10 +112,19 @@ bullseye.push-all:
 builder.build-all:
 	# core will build base as well
 	$(MAKE) builder/core $(DMCD)
-	for t in jdk11; do
+	for t in jdk11 jre11; do
 		DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/$$t $(DMCD)
 	done
 
 ## no arm on alpine java images. Set DOCKER_DEFAULT_PLATFORM
 builder.java11:
 	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/java11 $(DMCD)
+
+
+## playwright is special
+builder.playwright:
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/playwright $(DMCD)
+
+## repo-job
+builder.repo-job:
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/repo-job $(DMCD)
