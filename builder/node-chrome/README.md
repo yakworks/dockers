@@ -1,3 +1,2 @@
-node14 on top of k8s
-
-also installs chromium for testing
+chromium for testing
+Currently deprecated in favor of playwright
