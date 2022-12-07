@@ -10,7 +10,7 @@ They all inherit the WORKDIR=/project from base and none of them have CMD or ENT
 
 | Image             | Parent         | Desc                                                        | max size |
 | ----------------- | -------------- | ------------------------------------------------------------| -------- |
-| __builder/basic__ | _alpine:3.16_  | has the basics like git, curl etc..                         | 30mb     |
+| __builder/base__  | _alpine:3.16_  | has the basics like git, curl etc..                         | 30mb     |
 | __builder/core__  | _builder/base_ | adds in languages and utils like python, node, kubernetes, gpg, sops etc. | 100mb    |
 | __builder/jdk8__  | _builder/core_ | zulu java 8 with parralel and dumb-init | 165mb    |
 | __builder/jdk11__  | _builder/core_ | zulu java 11 with parralel and dumb-init | 250mb    |
