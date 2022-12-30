@@ -9,6 +9,10 @@ RUN apk update && apk add --no-cache \
 	bash gettext apache2-utils && \
     rm -rf /var/cache/apk/*
 
+# FIXME -- apk update above stores data in /var/cache/apk. Then the same run command removes it.
+#       -- Then we run apk update below again. Which pulls it again.
+# 
+
 # Install python3 alpine 3.9 default to 3.6, mkdocs 1.16.3 wont work with version > 3.6, 
 RUN apk update && apk add --no-cache \
     python3 && \
