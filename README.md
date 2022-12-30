@@ -2,7 +2,9 @@
 
 This is a collection of dockerfiles for CI/CD development and which are running in our kubernetes_ cluster.
 
-Uses Makefile whenever possible. Alos setup to keep both `arm64` (new Mac silicon) and `amd64` (Intel)
+## Quick Start
+
+Uses Makefile whenever possible. Also setup to keep both `arm64` (new Mac silicon) and `amd64` (Intel)
 Structure follows the org/repo:version naming for tags but with directories driving the tag. \
 For example the `bullseye/base` dir in this project publishes to [this docker hub](https://hub.docker.com/repository/docker/yakworks/bullseye) as `yakworks/bullseye:base`. \
 
@@ -11,6 +13,14 @@ For example the `bullseye/base` dir in this project publishes to [this docker hu
 - `make bullseye.build-all` will rebuild all of them, `make bullseye.build-all push` will build and push
 - `make bulder.build-all` will rebuild all of them, `make bullseye.build-all push` will build and push.
   the java ones will only support amd64 platform
+
+## Heredity
+
+The two main workhorses are __builder__ and __bullseye__, and then the rest are special-purpose images we keep. Each of these has several builds inside, maintaining a family tree of sorts.
+
+Builder is based on Alpine. Bullseye is based on Debian. Each has a `base` directory which directly depends on the official distribution image. From there, the other subfolders depend either on the base or on some other subfolder within the main distro folder.
+
+The `core` folder is the main workhorse for each distro. It has the tools we use most.
 
 ~~~yaml
 ├── alpine-jre         # base image for spring/java deployments
