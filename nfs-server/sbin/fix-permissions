@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+OWNER=65534
+GROUP=50
+BASEDIR='/nfs-volume/ninebox/kub'
+
+chown -R $OWNER:$GROUP $BASEDIR
+chmod -R u+rwX $BASEDIR                 # Give everything to owner.
+chmod -R g-rwx $BASEDIR                 # Take everything away from group to start.
+chmod -R g+rwX $BASEDIR                 # Give group rw of regular files, and rwx to directories.
+chmod -R o-rwx $BASEDIR                 # Remove all permissions from others.
+chmod -R o+rX $BASEDIR                  # Give others read on files, and rx on directories.
+# Hide all access from others for senssitive directories.
+chmod -R o-rwx $BASEDIR/*/tmp
+chmod -R o-rwx $BASEDIR/*/temp
+chmod -R o-rwx $BASEDIR/*/scripts
+chmod -R o-rwx $BASEDIR/*/conf
