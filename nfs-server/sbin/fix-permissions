@@ -11,11 +11,11 @@ usage() {
       FIX_PERMISSIONS_GROUP_PERMS is the permissions string for chmod. chmod g+FIX_PERMISSIONS_GROUP_PERMS FIX_PERMISSIONS_BASEDIR
       FIX_PERMISSIONS_OTHER_PERMS is the permissions string for chmod. chmod g+FIX_PERMISSIONS_OTHER_PERMS FIX_PERMISSIONS_BASEDIR
       FIX_PERMISSIONS_SPECIAL_DIRS is a list of relative paths from FIX_PERMISSIONS_BASEDIR which will have group/other perms as declared.
-      FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS is a chmod string for the FIX_PERMISSIONS_SPECIAL_DIRS directories.
+      FIX_PERMISSIONS_SPECIAL_DIRS_PERMS is a chmod string for the FIX_PERMISSIONS_SPECIAL_DIRS directories.
 
       Example:
       FIX_PERMISSIONS_SPECIAL_DIRS="*/tmp */scripts */conf"
-      FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS='go-rwx'
+      FIX_PERMISSIONS_SPECIAL_DIRS_PERMS='go-rwx'
 
     Operation:
       1. owner and group are set recursively on FIX_PERMISSIONS_BASEDIR.
@@ -72,7 +72,7 @@ if [[ ! -z "$FIX_PERMISSIONS_OTHER_PERMS" ]]; then
   __chmod "o+$FIX_PERMISSIONS_OTHER_PERMS" "$FIX_PERMISSIONS_BASEDIR"
 fi
 
-if [[ ! -z "$SPECIAL_DIRS" && ! -z "$FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS" ]]; then
+if [[ ! -z "$SPECIAL_DIRS" && ! -z "$FIX_PERMISSIONS_SPECIAL_DIRS_PERMS" ]]; then
   echo
   echo "Has special dirs and permissions..."
   # Can't figure out how to make this work without changing to the directory
@@ -85,7 +85,7 @@ if [[ ! -z "$SPECIAL_DIRS" && ! -z "$FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS" ]]; 
     # printf "%-30s %-60s" "$shortname" "$name"
     # Make sure the file or directory actually exists
     if [ -e "$name" ]; then  # Not a link or special file
-      __chmod "$FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS" "$name"
+      __chmod "$FIX_PERMISSIONS_SPECIAL_DIRS_PERMS" "$name"
     else
       echo "    DOES NOT EXIST: $name"
     fi
