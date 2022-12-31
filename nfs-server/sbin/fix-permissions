@@ -1,17 +1,93 @@
 #!/usr/bin/env bash
 
-OWNER=65534
-GROUP=50
-BASEDIR='/nfs-volume/ninebox/kub'
+usage() {
+  echo """Usage: $0
+    This command needs to be initialized by use of required variables:
+      FIX_PERMISSIONS_BASEDIR is the absolute path to the directory you want to have managed.
+      FIX_PERMISSIONS_OWNER is the numeric /etc/password user who should own the files/folders in FIX_PERMISSIONS_BASEDIR
+      FIX_PERMISSIONS_GROUP is the numeric /etc/group ID who should have special permissions to files and folders in FIX_PERMISSIONS_BASEDIR
 
-chown -R $OWNER:$GROUP $BASEDIR
-chmod -R u+rwX $BASEDIR                 # Give everything to owner.
-chmod -R g-rwx $BASEDIR                 # Take everything away from group to start.
-chmod -R g+rwX $BASEDIR                 # Give group rw of regular files, and rwx to directories.
-chmod -R o-rwx $BASEDIR                 # Remove all permissions from others.
-chmod -R o+rX $BASEDIR                  # Give others read on files, and rx on directories.
-# Hide all access from others for senssitive directories.
-chmod -R o-rwx $BASEDIR/*/tmp
-chmod -R o-rwx $BASEDIR/*/temp
-chmod -R o-rwx $BASEDIR/*/scripts
-chmod -R o-rwx $BASEDIR/*/conf
+      The following variables are optional:
+      FIX_PERMISSIONS_GROUP_PERMS is the permissions string for chmod. chmod g+FIX_PERMISSIONS_GROUP_PERMS FIX_PERMISSIONS_BASEDIR
+      FIX_PERMISSIONS_OTHER_PERMS is the permissions string for chmod. chmod g+FIX_PERMISSIONS_OTHER_PERMS FIX_PERMISSIONS_BASEDIR
+      FIX_PERMISSIONS_SPECIAL_DIRS is a list of relative paths from FIX_PERMISSIONS_BASEDIR which will have group/other perms as declared.
+      FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS is a chmod string for the FIX_PERMISSIONS_SPECIAL_DIRS directories.
+
+      Example:
+      FIX_PERMISSIONS_SPECIAL_DIRS="*/tmp */scripts */conf"
+      FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS='go-rwx'
+
+    Operation:
+      1. owner and group are set recursively on FIX_PERMISSIONS_BASEDIR.
+      2. owner gets u+rwX recursively on FIX_PERMISSIONS_BASEDIR. If any regular files already had execute permission they will still have it for owner.
+      3. Group and other users are denied all permissions recursively. 'go-rwx'
+      3. If FIX_PERMISSIONS_GROUP_PERMS is set, group will get those permissions recursively on FIX_PERMISSIONS_BASEDIR
+      4. If FIX_PERMISSIONS_OTHER_PERMS is set, regular users will get those permissions on files and directories in FIX_PERMISSIONS_BASEDIR
+
+      FIX_PERMISSIONS_OWNER will have rwX on everything in FIX_PERMISSIONS_BASEDIR. If regular files are executable before the run, they will still be executable after.
+      Non-owners will first have all permissions stripped from FIX_PERMISSIONS_BASEDIR.
+  """
+}
+
+# $1 - permissions adjustment string -- u+rwX or o-rx
+# $2 - Absolute path to recursively chmod
+function __chmod {
+  local cmd="chmod -R $1 $2"
+  echo "    $cmd"
+  $($cmd)
+}
+
+# $1 - New owner
+# $2 - New group
+# #3 - Absolute path to recursively chown.
+function __chown {
+  local cmd="chown -R $1:$2 $3"
+  echo "    $cmd"
+  $($cmd)
+}
+
+declare -a SPECIAL_DIRS=(${FIX_PERMISSIONS_SPECIAL_DIRS[@]})
+
+if [[ -z "$FIX_PERMISSIONS_BASEDIR" || -z "$FIX_PERMISSIONS_OWNER" || -z "$FIX_PERMISSIONS_GROUP" ]]; then
+  usage
+  exit 1
+fi
+
+echo "Changing ownership of $FIX_PERMISSIONS_BASEDIR"
+__chown $FIX_PERMISSIONS_OWNER $FIX_PERMISSIONS_GROUP $FIX_PERMISSIONS_BASEDIR
+echo
+echo "Setting base permissions..."
+__chmod 'u+rwX' "$FIX_PERMISSIONS_BASEDIR"
+__chmod 'go-rwx' "$FIX_PERMISSIONS_BASEDIR"
+
+if [[ ! -z "$FIX_PERMISSIONS_GROUP_PERMS" ]]; then
+  echo
+  echo "Has permissions for group..."
+  __chmod "g+$FIX_PERMISSIONS_GROUP_PERMS" "$FIX_PERMISSIONS_BASEDIR"
+fi
+
+if [[ ! -z "$FIX_PERMISSIONS_OTHER_PERMS" ]]; then
+  echo
+  echo "Has permissions for unprivileged users..."
+  __chmod "o+$FIX_PERMISSIONS_OTHER_PERMS" "$FIX_PERMISSIONS_BASEDIR"
+fi
+
+if [[ ! -z "$SPECIAL_DIRS" && ! -z "$FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS" ]]; then
+  echo
+  echo "Has special dirs and permissions..."
+  # Can't figure out how to make this work without changing to the directory
+  cd $FIX_PERMISSIONS_BASEDIR
+  # This loops once for each actual occurrence of the directory wildcard.
+  # Multiple hits loops multiple times.
+  # EXCEPT that if no match is found, it puts the literal wildcard string through too.
+  for shortname in ${SPECIAL_DIRS[@]}; do
+    name="$FIX_PERMISSIONS_BASEDIR/$shortname"
+    # printf "%-30s %-60s" "$shortname" "$name"
+    # Make sure the file or directory actually exists
+    if [ -e "$name" ]; then  # Not a link or special file
+      __chmod "$FIX_PERMISSIONS_SPECIAL_DIRS_GO_PERMS" "$name"
+    else
+      echo "    DOES NOT EXIST: $name"
+    fi
+  done
+fi
