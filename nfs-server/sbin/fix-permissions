@@ -87,7 +87,7 @@ if [[ ! -z "$SPECIAL_DIRS" && ! -z "$FIX_PERMISSIONS_SPECIAL_DIRS_PERMS" ]]; the
     name="$FIX_PERMISSIONS_BASEDIR/$shortname"
     # printf "%-30s %-60s" "$shortname" "$name"
     # Make sure the file or directory actually exists
-    if [ -e "$name" ]; then  # Not a link or special file
+    if [ -e "$name" ]; then
       __chmod "$FIX_PERMISSIONS_SPECIAL_DIRS_PERMS" "$name"
     else
       echo "    DOES NOT EXIST: $name"
