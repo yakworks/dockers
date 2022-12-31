@@ -26,6 +26,9 @@ usage() {
 
       FIX_PERMISSIONS_OWNER will have rwX on everything in FIX_PERMISSIONS_BASEDIR. If regular files are executable before the run, they will still be executable after.
       Non-owners will first have all permissions stripped from FIX_PERMISSIONS_BASEDIR.
+    
+    Configuration:
+      This is inside a docker. Set the environment variables in the docker command, or in the yml file when you deploy your nfs-server.
   """
 }
 
