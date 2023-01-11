@@ -69,7 +69,7 @@ endef
 $(NAMES): %: $(REGISTRY_BUILD)/%.build
 	$(SET_TAG_NAME)
 	if [[ $(DCMD) = push ]]; then
-		$(MAKE) $(REGISTRY_BUILD)/$*.push
+		DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) $(REGISTRY_BUILD)/$*.push
 	elif [[ $(DCMD) = run ]]; then
 		docker run --rm -it $$TAG_NAME
 	fi
@@ -99,7 +99,7 @@ $(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
 ## build all the debian bullseye targets
 bullseye.build-all:
 	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
-		$(MAKE) bullseye/$$t
+		DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) bullseye/$$t $(DCMD)
 	done
 
 ## builds and pushes all the debian bullseye targets
