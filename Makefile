@@ -1,6 +1,6 @@
 # check for build/shipkit and clone if not there, this should come first
 SHIPKIT_DIR = build/shipkit
-$(shell [ ! -e $(SHIPKIT_DIR) ] && git clone -b v2.0.11 https://github.com/yakworks/shipkit.git $(SHIPKIT_DIR) >/dev/null 2>&1)
+$(shell [ ! -e $(SHIPKIT_DIR) ] && git clone -b v2.0.12 https://github.com/yakworks/shipkit.git $(SHIPKIT_DIR) >/dev/null 2>&1)
 # Shipkit.make first, which does all the lifting to create makefile.env for the BUILD_VARS
 include $(SHIPKIT_DIR)/Shipkit.make
 include $(SHIPKIT_DIR)/makefiles/circle.make
@@ -78,7 +78,7 @@ $(IMAGES_BUILD): $(REGISTRY_BUILD)/%.build: %/Dockerfile
 	$(SET_TAG_NAME)
 	docker build --build-arg REGISTRY=$(REGISTRY) -t $$TAG_NAME $*
 	# install used instead of touch as it creates the parent dirs see https://stackoverflow.com/a/24675139/6500859
-	install -Dv /dev/null $@
+	ginstall -Dv /dev/null $@
 	$(logr.done) "$*"
 
 # sets up the yakworks/image:tag.push targets
@@ -93,7 +93,7 @@ $(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
 				 --push --platform $(PLATFORMS) -t $$TAG_NAME $*
 	fi
 
-	install -Dv /dev/null $@
+	ginstall -Dv /dev/null $@
 	$(logr.done) "$*"
 
 ## build all the debian bullseye targets

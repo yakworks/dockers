@@ -36,7 +36,7 @@ RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}
 	chmod +x /usr/bin/sops
 
 # kubectl aprox 15mb compressed
-ENV KUBECTL_VERSION=v1.23.8
+ENV KUBECTL_VERSION=v1.24.8
 RUN case `uname -m` in \
         x86_64) ARCH=amd64; ;; \
         armv7l) ARCH=arm; ;; \
