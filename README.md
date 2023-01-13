@@ -53,3 +53,8 @@ The `core` folder is the main workhorse for each distro. It has the tools we use
 ├── nginx-python # base image for quick python nginx server
 └── readiness-check
 ~~~
+
+## Running an image
+
+`make run bullseye/core`
+

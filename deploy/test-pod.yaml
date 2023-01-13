@@ -1,0 +1,22 @@
+# deploy a pod on kuebernetes and keep it running
+# run > kubectl apply -f deploy/test-pod.yaml
+# shell into it -> kubectl exec --stdin --tty psqlbak -- /bin/bash
+apiVersion: v1
+kind: Pod
+metadata:
+  name: psqlbak
+spec:
+  containers:
+  - name: psqlbak
+    image: yakworks/bullseye:core-psql14
+    imagePullPolicy: Always
+    # sleep forever
+    command: [ "sleep" ]
+    args: [ "infinity" ]
+    # command: ["/bin/sleep"]
+    # args: ["600"]
+    env:
+      - name: GITHUB_TOKEN
+        valueFrom: { secretKeyRef: { name: bot-secrets,  key: GITHUB_TOKEN } }
+      - name: GPG_KEY
+        valueFrom: { secretKeyRef: { name: bot-secrets,  key: GPG_KEY } }
