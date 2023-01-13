@@ -7,6 +7,11 @@ FROM $REGISTRY/bullseye:base
 # node16, npm, pnpm and googles zx
 # kubectl
 
+# FIXME something is worng with pip3 with this.
+# try shelling in and running this core "pip3 install s3cmd" and it fails, not sure if its like that for others
+# works fine if you prefix path and run "/usr/bin/pip3 install s3cmd" instaed of letting it use "/usr/local/bin/pip3"
+# also works fine here in dockerfile with just pip3
+
 # Install python3, about 30mb compressed
 RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     python3-pip && \
@@ -60,3 +65,5 @@ RUN echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc &&
     echo "alias ll='ls -lahG'" >> /root/.bashrc && \
     echo "alias gw='./gradlew'" >> /root/.bashrc && \
     echo "alias m='make'" >> /root/.bashrc
+# end dev help
+

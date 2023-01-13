@@ -43,3 +43,8 @@ For example the `bullseye/base` dir in this project publishes to [this docker hu
 ├── nginx-python # base image for quick python nginx server
 └── readiness-check
 ~~~
+
+## Running an image
+
+`make run bullseye/core`
+
