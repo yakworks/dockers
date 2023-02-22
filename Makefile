@@ -69,7 +69,7 @@ endef
 $(NAMES): %: $(REGISTRY_BUILD)/%.build
 	$(SET_TAG_NAME)
 	if [[ $(DCMD) = push ]]; then
-		$(MAKE) $(REGISTRY_BUILD)/$*.push
+		DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) $(REGISTRY_BUILD)/$*.push
 	elif [[ $(DCMD) = run ]]; then
 		docker run --rm -it $$TAG_NAME
 	fi
