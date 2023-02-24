@@ -42,7 +42,11 @@ RUN echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc &&
     echo "alias ll='ls -lahG'" >> /root/.bashrc && \
     echo "alias gw='./gradlew'" >> /root/.bashrc && \
     echo "alias m='make'" >> /root/.bashrc && \
-    echo 'alias s3cmd="$S3CMD_CONFIG=/config/s3/.s3cfg' >> /root/.bashrc && \
+    # s3cmd normally wants ~/.s3cfg for a configuration.
+    # If we do that in a docker and use a secret for the config, it makes /root read-only.
+    # This breaks our image.
+    # Define S3CMD_CONFIG_FILE environment variable in your deployment yaml for the full path of the file.
+    echo 'alias s3cmd="s3cmd -c $S3CMD_CONFIG_FILE"' >> /root/.bashrc && \
     echo "source $HOME/complete_alias" >> /root/.bashrc && \
     echo "complete -F _complete_alias m" >> /root/.bashrc
 
