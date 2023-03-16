@@ -3,11 +3,11 @@
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 
 declare -i cronfilter_configured=1
-: "${debug:=false}"
+: "${CRONFILTER_DEBUG:=false}"
 : "${CRONFILTER_COMMAND:=/opt/entry.sh}"
 
-function dbug {
-  [[ ${debug} == 'true' ]] && echo $@
+function debug {
+  [[ ${CRONFILTER_DEBUG} == 'true' ]] && echo $@
 }
 
 # Compare current hour with environment and execute target if there's a match.
@@ -19,16 +19,16 @@ function dbug {
 # If either of the above variables are not set, this docker will act exactly like repo-job-1.
 [ -z "$CRONFILTER_LOCALE" ]        && cronfilter_configured=0
 [ -z "$CRONFILTER_LOCAL_HOURS" ]   && cronfilter_configured=0
-dbug "CRONFILTER_LOCALE=$CRONFILTER_LOCALE"
-dbug "CRONFILTER_LOCAL_HOURS=$CRONFILTER_LOCAL_HOURS"
+debug "CRONFILTER_LOCALE=$CRONFILTER_LOCALE"
+debug "CRONFILTER_LOCAL_HOURS=$CRONFILTER_LOCAL_HOURS"
 
 if [[ $cronfilter_configured -eq 1 ]]; then
   hour=$(TZ="$CRONFILTER_LOCALE" date +%2H)
-  dbug "hour=$hour"
+  debug "hour=$hour"
   if [[ "$CRONFILTER_LOCAL_HOURS" =~ .*"$hour".* ]]; then
-    dbug "cron.filter_local_hours: Localtime hours match, starting job at $CRONFILTER_COMMAND"
+    debug "cron.filter_local_hours: Localtime hours match, starting job at $CRONFILTER_COMMAND"
     ${CRONFILTER_COMMAND}
   else
-    dbug "cron.filter_local_hours: Localtime hours do not match"
+    echo "cron.filter_local_hours: Localtime hours do not match"
   fi
 fi

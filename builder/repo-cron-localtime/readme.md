@@ -1,13 +1,21 @@
 # repo-cron-localtime
 
-This is repo-job-1 with a hook to check the current time against a specific locale timezone which presumably follows Daylight Saving Time.
+This is repo-job-1 with a hook to check the current time against a specific locale timezone which can follow Daylight Saving Time.
 
-- If the current hour is listed in CRONFILTER_LOCAL_HOURS, then this pod acts exactly like repo-job-1.
+There are 2 critical environment variables necessary to do a cron check:
+1. CRONFILTER_LOCALE='America/Chicago'
+2. CRONFILTER_LOCAL_HOURS='08 09 11 21'
+
+If either of these is not defined, then this pod acts just like repo-job-1.
+
+- If the current hour is listed in CRONFILTER_LOCAL_HOURS, then this pod executes /opt/entry.sh (or whatever is in CRONFILTER_COMMAND)
 - If the current hour is NOT in CRONFILTER_LOCAL_HOURS, then the job exits with zero activity and normal result code.
 
 This project came about because we need to run cronjobs which follow Daylight Saving Time without extra junk in the way.
 
 ## Environment variables
+
+### Required variables for cron functionality to work
 
 - `CRONFILTER_LOCAL_HOURS='07 09 12 14 19'`
 : A string containing 2-digit hours (00-23) separated by spaces. The hours are the local hours for which you want to run the current job.
@@ -15,9 +23,16 @@ This project came about because we need to run cronjobs which follow Daylight Sa
 - `CRONFILTER_LOCALE='America/New_York'`
 : A string matching a Linux locale string in the `tzdata` package. This locale is not configured as the system default, which is assumed to be UTC but does not matter.
 
+### Optional variables
+
+`cronfilter.sh` checks the hour even if these are undefined
+
 - `CRONFILTER_COMMAND='/opt/entry.sh'`
 : The command to execute if the cronfilter matches the current hour to `CRONFILTER_LOCAL_HOURS`.
 This defaults to `/opt/entry.sh` which is what repo-job-1 defaults to.
+
+- `CRONFILTER_DEBUG='false'`
+: When true, this turns on extra logging in the cronfilter.sh script.
 
 ## Usage
 
