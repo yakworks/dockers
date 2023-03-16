@@ -14,7 +14,8 @@ function dbug {
 # This section executes without make, with only values in the environment.
 # EVERYTHING needs to be defined in your cronjob deployment yaml.
 # CRONFILTER_LOCALE='America/Chicago'
-# CRONFILTER_LOCAL_HOURS='02|08|12|16|20|0'
+# CRONFILTER_LOCAL_HOURS='02 08 12 16 20 00'
+# CRONFILTER_COMMAND is optional, defaults to /opt/entry.sh
 # If either of the above variables are not set, this docker will act exactly like repo-job-1.
 [ -z "$CRONFILTER_LOCALE" ]        && cronfilter_configured=0
 [ -z "$CRONFILTER_LOCAL_HOURS" ]   && cronfilter_configured=0
@@ -24,7 +25,7 @@ dbug "CRONFILTER_LOCAL_HOURS=$CRONFILTER_LOCAL_HOURS"
 if [[ $cronfilter_configured -eq 1 ]]; then
   hour=$(TZ="$CRONFILTER_LOCALE" date +%2H)
   dbug "hour=$hour"
-  if [[ ${hour} =~ ${CRONFILTER_LOCAL_HOURS} ]]; then
+  if [[ "$CRONFILTER_LOCAL_HOURS" =~ .*"$hour".* ]]; then
     dbug "cron.filter_local_hours: Localtime hours match, starting job at $CRONFILTER_COMMAND"
     ${CRONFILTER_COMMAND}
   else
