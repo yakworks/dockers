@@ -15,7 +15,7 @@ This project came about because we need to run cronjobs which follow Daylight Sa
 
 ## Environment variables
 
-### Required variables for cron functionality to work
+### Required variables for cron time check to activate
 
 - `CRONFILTER_LOCAL_HOURS='07 09 12 14 19'`
 : A string containing 2-digit hours (00-23) separated by spaces. The hours are the local hours for which you want to run the current job.
@@ -25,7 +25,7 @@ This project came about because we need to run cronjobs which follow Daylight Sa
 
 ### Optional variables
 
-`cronfilter.sh` checks the hour even if these are undefined
+`cronfilter.sh` checks the hour even if the following variables are undefined
 
 - `CRONFILTER_COMMAND='/opt/entry.sh'`
 : The command to execute if the cronfilter matches the current hour to `CRONFILTER_LOCAL_HOURS`.
@@ -41,4 +41,22 @@ Define your cronjob exactly as you would for repo-job-1, but add:
 2. CRONFILTER_LOCAL_HOURS='04 09 14 21'
 3. Define the cronjob schedule with a * for hours but all other fields as usual.
 
-This check does NOT run make to pull environment before the time check. The variables must be present when the pod runs.
+```
+spec:
+  schedule: '7 * * * *'
+...
+      containers:
+        ...
+          env:
+          - name: CRONFILTER_LOCALE
+            value: 'America/New_York'
+          - name: CRONFILTER_LOCAL_HOURS
+            value: '04 09 14 21'
+          - name: CRONFILTER_COMMAND
+            value: my/optional/task.sh
+          - name: CRONFILTER_DEBUG
+            value: 'true' # Needs to be quoted or it will blow up deployment yaml
+```
+
+This check does __NOT__ run `make` to pull environment before the time check. It is done entirely in `bash`.
+__ALL relevant `CRONFILTER_*` variables must be present as environment variables when the pod runs!__
