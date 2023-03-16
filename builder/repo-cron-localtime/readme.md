@@ -17,7 +17,7 @@ This project came about because we need to run cronjobs which follow Daylight Sa
 
 - `CRONFILTER_COMMAND='/opt/entry.sh'`
 : The command to execute if the cronfilter matches the current hour to `CRONFILTER_LOCAL_HOURS`.
-This defaults to /opt/entry.sh which is what repo-job-1 defaults to.
+This defaults to `/opt/entry.sh` which is what repo-job-1 defaults to.
 
 ## Usage
 
