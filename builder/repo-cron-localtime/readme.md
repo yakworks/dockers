@@ -15,6 +15,10 @@ This project came about because we need to run cronjobs which follow Daylight Sa
 - `CRONFILTER_LOCALE='America/New_York'`
 : A string matching a Linux locale string in the `tzdata` package. This locale is not configured as the system default, which is assumed to be UTC but does not matter.
 
+- `CRONFILTER_COMMAND='/opt/entry.sh'`
+: The command to execute if the cronfilter matches the current hour to `CRONFILTER_LOCAL_HOURS`.
+This defaults to /opt/entry.sh which is what repo-job-1 defaults to.
+
 ## Usage
 
 Define your cronjob exactly as you would for repo-job-1, but add:
