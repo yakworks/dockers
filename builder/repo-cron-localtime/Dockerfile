@@ -21,7 +21,9 @@ RUN apk add --no-cache \
     tzdata \
     && rm -rf /var/cache/apk/*
 
-COPY entry.sh /opt/
+COPY cronfilter.sh /opt/
 
 # match default circle working dir
 WORKDIR /project
+
+CMD ["/opt/cronfilter.sh"]
