@@ -3,10 +3,10 @@
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 
 declare -i cronfilter_configured=1
-declare debug="${debug:-false}"
+: "${debug:=false}"
 
 function dbug {
-  [[ ${debug} = 'true' ]] && echo $@
+  [[ ${debug} == 'true' ]] && echo $@
 }
 
 # Compare current hour with environment and execute target if there's a match.

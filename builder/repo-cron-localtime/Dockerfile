@@ -21,5 +21,7 @@ RUN apk add --no-cache \
     tzdata \
     && rm -rf /var/cache/apk/*
 
+COPY entry.sh /opt/
+
 # match default circle working dir
 WORKDIR /project
