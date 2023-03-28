@@ -10,3 +10,6 @@ They all inherit the WORKDIR=/root/project from base and none of them have CMD o
 | __bullseye:jdk11__  | _bullseye:core_ | zulu java 11 with parralel and dumb-init | 309 MB    |
 | __bullseye:jre11__  | ... | zulu jre 11 with minimum for prod deploy dumb-init, make and fonts  | 106 MB    |
 | __bullseye:postgres14_jdk11__  | _postgres:14_ | jdk 11 on psql14, has basic build tools make, git etc  | 300 MB    |
+
+
+`export DOCKER_DEFAULT_PLATFORM=linux/amd64` if on mac arm and want to force image to amd64

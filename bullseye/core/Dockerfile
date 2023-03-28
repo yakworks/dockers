@@ -58,7 +58,7 @@ RUN case `uname -m` in \
 
 # ADD misc for using as dev enironment, bash_completion and some aliases
 RUN apt-get update && apt-get -y --no-install-recommends install \
-    bash-completion && \
+    bash-completion make fzf \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
 RUN echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc && \
