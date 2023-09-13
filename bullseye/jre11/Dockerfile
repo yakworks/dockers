@@ -43,7 +43,7 @@ RUN apt-get -qq update && \
     mkdir -p /usr/share/man/man1 && \
     echo "Package: zulu11-*\nPin: version 11.0.15-*\nPin-Priority: 1001" > /etc/apt/preferences && \
     apt-get -qq -y --no-install-recommends install ${ZULU_PACKAGE}=${ZULU_VERSION}-* && \
-    apt-get -qq -y purge gnupg software-properties-common curl && \
+    apt-get -qq -y purge software-properties-common && \
     apt -y autoremove && \
     rm -rf /var/lib/apt/lists/* zulu-repo_${ZULU_REPO_VER}_all.deb
 
