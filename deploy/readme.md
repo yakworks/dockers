@@ -9,7 +9,7 @@ TODO move these to lke-crunchy once complete. here for ease
 3. `export PGUSER=postgres; export PGPASSWORD="6AZ...."; export PGHOST=rhino-primary.postgres-operator.svc`
 4. smoke test `psql rndc_prod`-> `select * from users;`
 5. backup -> `pg_dump --file "./rndc_prod.bak" --verbose --format=c rndc_prod`
-6. restore -> `pg_restore --dbname "rndc-mirror" --clean --verbose "/rndc_prod.bak"`
+6. restore -> `pg_restore --dbname "rndc" --clean --verbose "/rndc_prod.bak"`
 7. delete pod when done -> `kubectl delete pod psqlbak`
 
 ## move backups to/from s3
@@ -77,4 +77,22 @@ New settings:
 Test access with supplied credentials? [Y/n] n
 
 Save settings? [y/N] y
+```
+
+
+going straight to the crunchy db
+
+```bash
+kubectl exec --stdin --tty psqlbak -- /bin/bash
+
+kubectl exec -c database -n postgres-operator \
+	$$(kubectl get pod -n postgres-operator --selector="postgres-operator.crunchydata.com/cluster=$(name),postgres-operator.crunchydata.com/role=master" -o name) \
+	-- psql -c "select version();"
+
+kubectl exec -c database -n postgres-operator \
+	$(kubectl get pod -n postgres-operator \
+    --selector="postgres-operator.crunchydata.com/cluster=rhino,postgres-operator.crunchydata.com/role=master" \
+    -o name) \
+	--stdin --tty psqlbak -- /bin/bash
+
 ```

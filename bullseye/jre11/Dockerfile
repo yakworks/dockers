@@ -1,4 +1,5 @@
-FROM debian:bullseye-slim
+ARG REGISTRY=yakworks
+FROM $REGISTRY/bullseye:base
 
 # KEEP SLIM For deploying spring and grails server apps
 
@@ -19,7 +20,7 @@ RUN apt-get -qq update && \
     # git \
     # coreutils \
     # bash \
-    make \
+    # make \
     fontconfig \
     fonts-dejavu \
     # xvfb \
