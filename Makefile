@@ -6,16 +6,17 @@ include $(SHIPKIT_DIR)/Shipkit.make
 include $(SHIPKIT_DIR)/makefiles/circle.make
 include $(SHIPKIT_DIR)/makefiles/vault.make
 
-INCLUDE_DIRS = builder bullseye
+INCLUDE_DIRS=builder bullseye bookworm
 DOCKERFILES = $(shell find $(INCLUDE_DIRS) -type f -name 'Dockerfile')
 NAMES = $(subst /Dockerfile,,$(DOCKERFILES))
-REGISTRY ?= yakworks
+REGISTRY?=docker.io/yakworks
 REGISTRY_BUILD ?= build/$(REGISTRY)
 IMAGES = $(addprefix $(REGISTRY_BUILD)/,$(NAMES))
 IMAGES_BUILD = $(addsuffix .build,$(IMAGES))
 IMAGES_PUSH = $(addsuffix .push,$(IMAGES))
-DEPENDS = .depends.mk
-PLATFORMS ?= linux/arm64,linux/amd64
+DEPENDS=.depends.mk
+PLATFORMS?=linux/arm64,linux/amd64
+#PLATFORMS ?= linux/amd64
 
 # bullseye_deps = $(shell awk '/^$(REGISTRY)\/bullseye/{ sub(/:$$/, "", $$1); print $$1 }' .depends.mk )
 # bullseye_deps += bullseye\:jre11 bullseye\:postgres14-jdk11
@@ -29,21 +30,22 @@ clean:
 
 pull-base:
 	docker pull debian:bullseye-slim
+	docker pull debian:bookworm-slim
 	docker pull alpine:3.16
 
 grepdeps: $(DOCKERFILES)
 	$(logr) $@
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES)
 
-.PHONY: $(DEPENDS)
 # depends fires on every make call to build the .depends.mk, so needs to happen first before the others
-$(DEPENDS): $(DOCKERFILES)
+.depends.mk: $(DOCKERFILES)
 	grep '^FROM \$$REGISTRY/' $(DOCKERFILES) | \
 		awk -F '/Dockerfile:FROM \\$$REGISTRY/' '{ print $$1 " " $$2 }' | \
 		sed 's@[:]@/@g' | \
 		awk '{ print "$(REGISTRY_BUILD)/" $$1 ".build: " "$(REGISTRY_BUILD)/" $$2 ".build"}' > $@
 
-sinclude $(DEPENDS)
+sinclude .depends.mk
+
 
 export DCMD ?= build
 ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
@@ -97,6 +99,18 @@ $(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
 	$(logr.done) "$*"
 
 ## build all the debian bullseye targets
+bookworm.build-all:
+	for t in base core jdk21 jre21 nginx-python mkdocs mkdocs-server; do
+		$(MAKE) bookworm/$$t
+	done
+
+## build all the debian bullseye targets
+bookworm.push-all:
+	for t in base core jdk21 jre21 nginx-python mkdocs mkdocs-server; do
+		$(MAKE) bookworm/$$t push
+	done
+
+## build all the debian bullseye targets
 bullseye.build-all:
 	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
 		$(MAKE) bullseye/$$t
@@ -128,3 +142,8 @@ builder.playwright:
 ## repo-job
 builder.repo-job:
 	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) builder/repo-job $(DMCD)
+
+log-IMAGES:
+	echo $(DOCKERFILES)
+	echo $(IMAGES)
+	echo $(REGISTRY_BUILD)

@@ -34,25 +34,24 @@ RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}
     -o /usr/bin/sops && \
 	chmod +x /usr/bin/sops
 
-ARG ZULU_REPO_VER=1.0.0-3
-ARG ZULU_PACKAGE=zulu11-jre
-ARG ZULU_VERSION=11.0.15
 
-# copied from https://github.com/zulu-openjdk/zulu-openjdk/blob/master/11-latest/Dockerfile
+# copied from https://github.com/zulu-openjdk/zulu-openjdk/blob/master/ubuntu/17-jre-latest/Dockerfile
+ARG ZULU_REPO_VER=1.0.0-3
+ARG ZULU_REPO_SHA256=d08d9610c093b0954c6b278ecc628736e303634331641142fa5096396201f49c
+
 RUN apt-get -qq update && \
     apt-get -qq -y --no-install-recommends install software-properties-common locales tzdata && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen en_US.UTF-8 && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
-    curl -sLO https://cdn.azul.com/zulu/bin/zulu-repo_${ZULU_REPO_VER}_all.deb && dpkg -i zulu-repo_${ZULU_REPO_VER}_all.deb && \
+    curl -sLO https://cdn.azul.com/zulu/bin/zulu-repo_${ZULU_REPO_VER}_all.deb && \
+    echo "${ZULU_REPO_SHA256} zulu-repo_${ZULU_REPO_VER}_all.deb" | sha256sum --strict --check - && \
+    dpkg -i zulu-repo_${ZULU_REPO_VER}_all.deb && \
     apt-get -qq update && \
-    apt-get -qq -y dist-upgrade && \
-    mkdir -p /usr/share/man/man1 && \
-    echo "Package: zulu11-*\nPin: version 11.0.15-*\nPin-Priority: 1001" > /etc/apt/preferences && \
-    apt-get -qq -y --no-install-recommends install ${ZULU_PACKAGE}=${ZULU_VERSION}-* && \
-    apt-get -qq -y purge software-properties-common && \
-    apt -y autoremove && \
+    echo "Package: zulu17-*\nPin: version 17.0.14-*\nPin-Priority: 1001" > /etc/apt/preferences && \
+    apt-get -qq -y --no-install-recommends install zulu17-jre=17.0.14-* && \
+    apt-get -qq -y purge --auto-remove software-properties-common && \
     rm -rf /var/lib/apt/lists/* zulu-repo_${ZULU_REPO_VER}_all.deb
 
-ENV JAVA_HOME=/usr/lib/jvm/zulu11
+ENV JAVA_HOME=/usr/lib/jvm/zulu17
 
