@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/mssql/server:2019-latest
+FROM mcr.microsoft.com/mssql/server:2017-latest
 
 USER root
 
@@ -26,6 +26,14 @@ ENV JAVA_HOME=/usr/lib/jvm/zulu8
 RUN javac -version; \
     java -version
 
-USER mssql
+RUN apt-get -y update && apt-get -y install \
+    make \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
+
+RUN ln -s /opt/mssql-tools/bin/sqlcmd /bin/sqlcmd
+
+# USER mssql
 # WORKDIR /project
 

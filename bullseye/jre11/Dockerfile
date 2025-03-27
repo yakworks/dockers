@@ -36,7 +36,7 @@ RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}
 
 ARG ZULU_REPO_VER=1.0.0-3
 ARG ZULU_PACKAGE=zulu11-jre
-ARG ZULU_VERSION=11.0.15
+ARG ZULU_VERSION=11.0.26
 
 # copied from https://github.com/zulu-openjdk/zulu-openjdk/blob/master/11-latest/Dockerfile
 RUN apt-get -qq update && \
@@ -48,7 +48,7 @@ RUN apt-get -qq update && \
     apt-get -qq update && \
     apt-get -qq -y dist-upgrade && \
     mkdir -p /usr/share/man/man1 && \
-    echo "Package: zulu11-*\nPin: version 11.0.15-*\nPin-Priority: 1001" > /etc/apt/preferences && \
+    echo "Package: zulu11-*\nPin: version 11.0.26-*\nPin-Priority: 1001" > /etc/apt/preferences && \
     apt-get -qq -y --no-install-recommends install ${ZULU_PACKAGE}=${ZULU_VERSION}-* && \
     apt-get -qq -y purge software-properties-common && \
     apt -y autoremove && \

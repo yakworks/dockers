@@ -111,14 +111,16 @@ bookworm.push-all:
 	done
 
 ## build all the debian bullseye targets
+## for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
 bullseye.build-all:
-	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11; do
+	for t in base core jdk11 jre11 docker-jdk11; do
 		$(MAKE) bullseye/$$t
 	done
 
 ## builds and pushes all the debian bullseye targets
+## for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11 dev; do
 bullseye.push-all:
-	for t in base core helm jdk11 jre11 postgres14-jdk11 docker docker-jdk11 dev; do
+	for t in base core jdk11 jre11 docker-jdk11; do
 		$(MAKE) bullseye/$$t push
 	done
 

@@ -14,10 +14,15 @@ They all inherit the WORKDIR=/root/project from base and none of them have CMD o
 see https://unix.stackexchange.com/q/748633
 
 For multiplatform builds (so both Mac ARM and Intel work)
+When getting `ERROR: Multi-platform build is not supported for the docker driver.`
+Do 
 ```
 docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
 docker buildx inspect --bootstrap
 ```
+
+or just a simple `docker buildx create --name multiarch --driver docker-container --use` did it too
+
 
 then run `make bullseye/jdk17 push` for example
 

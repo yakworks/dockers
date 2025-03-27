@@ -25,9 +25,9 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
 # # curl replacement, worth the 15mb, see https://httpie.io/docs
 RUN pip3 install httpie
 
-# Install node16, npm and googles zx for scripts https://github.com/google/zx
+# Install node18, npm and googles zx for scripts https://github.com/google/zx
 # heavy about 80mb compressed, 170mb uncompressed
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get -y --no-install-recommends install nodejs && \
     npm i -g zx && npm i -g pnpm && \
     npm cache clean --force && \
