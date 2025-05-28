@@ -13,7 +13,7 @@ spec:
   template:
     spec: 
       containers:
-      - image: yakworks/docmark-nginx
+      - image: yakworks/bookworm:mkdocs-server
         env:
           # The basic auth user name
           - name: AUTH_USERNAME
@@ -25,6 +25,7 @@ spec:
           - name: GITHUB_PROJECT
             value: yakworks/some-docs
           # auth token if github project is not public https://github.com/settings/tokens 
+          # This should come from secret
           - name: GITHUB_TOKEN
             value: 'asfd8asdf987adf987'
           # (optional) defaults to master

@@ -1,10 +1,15 @@
 # nginx image with python 3.6 installed.
 
-starts with nginx base image that uses alpine 3.9 as that has the the right pyton version when doing apk install
+- starts with nginx:bookworm base image that uses bookworm
 
-adds in bash as well.
+- adds in python and bash as well.
 
-changes default to map to `site` so its easier to run and map volume
+- adds in mkdocs and mkdocs-material
+- 
+- changes default to map to `site` so its easier to run and map volume
+
+- NOTE: the `.sh` scripts are added and run by nginx image on startup and ordered. 
+  So this one has a 40-auth.sh added that is run and looks for the `$AUTH_USERNAME $AUTH_PASSWORD` variables
 
 ## Serving static content
 

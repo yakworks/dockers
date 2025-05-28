@@ -2,6 +2,11 @@
 
 #set -e
 
+#NOTE:
+# 1. pulls the github project
+# 2. runs either the MAKE_BULD_TARGET or just calls mkdocs build
+# 3. nginx:bookworm base image will start after it runs this and other scripts added in order
+
 GITHUB_BASE_URL="github.com/$GITHUB_PROJECT.git"
 GITHUB_URL="https://dummy:${GITHUB_TOKEN}@$GITHUB_BASE_URL"
 
