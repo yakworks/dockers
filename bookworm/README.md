@@ -18,6 +18,20 @@ docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platf
 docker buildx inspect --bootstrap
 ```
 
+if encountering the error
+
+```
+The error "ERROR: existing instance for multi-platform-builder but no append mode, specify the node name to make changes for existing instances" 
+```
+
+run the following
+
+```bash
+docker buildx rm multi-platform-builder
+docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
+```
+
+
 then run `make bullseye/jdk17 push` for example
 
 
