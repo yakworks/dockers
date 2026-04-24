@@ -2,7 +2,8 @@
 
 # wait for database to start...
 for i in {30..0}; do
-  if sqlcmd -U SA -P $SA_PASSWORD -Q 'SELECT 1;' &> /dev/null; then
+  # ODBC Driver 18 enforces TLS by default; -C trusts the server cert.
+  if sqlcmd -C -U SA -P "$SA_PASSWORD" -Q 'SELECT 1;' &> /dev/null; then
     echo "$0: SQL Server started"
     break
   fi
@@ -27,12 +28,12 @@ for f in /docker-entrypoint-initdb.d/*; do
         RST+="WITH REPLACE, FILE = 1, NOUNLOAD, STATS = 5, MOVE '$DBNAME' TO '/var/opt/mssql/data/${DBNAME}.mdf', "
         RST+="MOVE '${DBNAME}_log' TO '/var/opt/mssql/data/${DBNAME}_log.ldf'"
         echo "$0: $RST"
-        sqlcmd -U sa -P $SA_PASSWORD -Q "$RST" ;;
-    *.sql)    echo "$0: running $f"; sqlcmd -U SA -P $SA_PASSWORD -X -i  "$f"; echo ;;
-    *.sql.gz) echo "$0: running $f"; gunzip "$f" ; sqlcmd -U SA -P $SA_PASSWORD -X -i  "${f%.gz}"; echo ;;
+        sqlcmd -C -U sa -P "$SA_PASSWORD" -Q "$RST" ;;
+    *.sql)    echo "$0: running $f"; sqlcmd -C -U SA -P "$SA_PASSWORD" -X -i  "$f"; echo ;;
+    *.sql.gz) echo "$0: running $f"; gunzip "$f" ; sqlcmd -C -U SA -P "$SA_PASSWORD" -X -i  "${f%.gz}"; echo ;;
     *)        echo "$0: ignoring $f" ;;
   esac
   echo
 done
 echo "$0: SQL Server Database ready, listing .."
-sqlcmd -U SA -P $SA_PASSWORD -Q 'SELECT Name FROM sys.Databases'
+sqlcmd -C -U SA -P "$SA_PASSWORD" -Q 'SELECT Name FROM sys.Databases'
