@@ -1,6 +1,8 @@
 #!/bin/bash
 
+# wait for database to start...
 for i in {30..0}; do
+  # ODBC Driver 18 enforces TLS by default; -C trusts the server cert.
   if sqlcmd -C -U SA -P "$SA_PASSWORD" -Q 'SELECT 1;' &> /dev/null; then
     echo "$0: SQL Server started"
     break
@@ -9,6 +11,7 @@ for i in {30..0}; do
   sleep 2
 done
 
+#sleep another 5 seconds to give it a chance
 sleep 5
 
 echo "$0: RUNNING FILES IN docker-entrypoint-initdb.d"
