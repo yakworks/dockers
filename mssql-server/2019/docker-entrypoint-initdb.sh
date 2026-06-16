@@ -19,7 +19,9 @@ for f in /docker-entrypoint-initdb.d/*; do
   case "$f" in
     *.sh)     echo "$0: running $f"; . "$f" ;;
     *.bak)
+        #remove path
         BAKFILE=$(basename "$f")
+        #remove .bak ext
         DBNAME="${BAKFILE%.bak}"
         echo "$0: RESTORING $BAKFILE"
 
