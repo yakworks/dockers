@@ -22,10 +22,11 @@ for f in /docker-entrypoint-initdb.d/*; do
         #remove path
         BAKFILE=$(basename "$f")
         #remove .bak ext
-        DBNAME="${BAKFILE%.bak}"  
+        DBNAME="${BAKFILE%.bak}"
         echo "$0: RESTORING $BAKFILE"
         RST="RESTORE DATABASE $DBNAME FROM DISK = '$f' "
         RST+="WITH REPLACE, FILE = 1, NOUNLOAD, STATS = 5, MOVE '$DBNAME' TO '/var/opt/mssql/data/${DBNAME}.mdf', "
+        RST+="MOVE '${DBNAME}_Data_01' TO '/var/opt/mssql/data/${DBNAME}.ndf', "
         RST+="MOVE '${DBNAME}_log' TO '/var/opt/mssql/data/${DBNAME}_log.ldf'"
         echo "$0: $RST"
         sqlcmd -C -U sa -P "$SA_PASSWORD" -Q "$RST" ;;
