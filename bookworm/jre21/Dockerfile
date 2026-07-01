@@ -2,6 +2,14 @@ ARG REGISTRY=yakworks
 FROM $REGISTRY/bookworm:base
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+# install sops, used along with GPG for encrypting files and decryopting from vault
+ENV SOPS_VERSION=3.7.1
+RUN curl -qsL https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux \
+    -o /usr/bin/sops && \
+	chmod +x /usr/bin/sops
+
+
 ARG ZULU_REPO_VER=1.0.0-3
 ARG ZULU_REPO_SHA256=d08d9610c093b0954c6b278ecc628736e303634331641142fa5096396201f49c
 
