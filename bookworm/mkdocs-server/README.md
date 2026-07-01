@@ -3,6 +3,10 @@ on deploy and builds into the site directory to be served by nginx.
 Its like Github Pages but this allows custom build to be fired 
 and importantly adding basic authentication as an option to protect pages
 
+NOTE: the `.sh` scripts are added and run by nginx image on startup and ordered. 
+So this one has a 50-build.sh that is run after the others by the base `nginx:bookworm` image
+
+
 example deploy
 
 ```yml
