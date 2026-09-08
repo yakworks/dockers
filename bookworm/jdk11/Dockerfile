@@ -13,7 +13,7 @@ RUN set -ex && \
     apt-get -qq update && \
     echo "Package: zulu11-*\nPin: version 11.0.30-*\nPin-Priority: 1001" > /etc/apt/preferences && \
     apt-get -qq -y --no-install-recommends install zulu11-jdk=11.0.30-* && \
-    apt-get -qq -y purge --auto-remove gnupg curl && \
+    apt-get -qq -y purge --auto-remove curl && \
     apt-get -qq -y dist-upgrade && \
     apt-get -qq -y autoremove && \
     apt-get -qq clean && \
