@@ -15,6 +15,7 @@ build/docker.io/yakworks/bullseye/dev.build: build/docker.io/yakworks/bullseye/j
 build/docker.io/yakworks/bullseye/aws.build: build/docker.io/yakworks/bullseye/core.build
 build/docker.io/yakworks/bullseye/helm.build: build/docker.io/yakworks/bullseye/core.build
 build/docker.io/yakworks/bookworm/jdk11.build: build/docker.io/yakworks/bookworm/core.build
+build/docker.io/yakworks/bookworm/docker-jdk11.build: build/docker.io/yakworks/bookworm/jdk11.build
 build/docker.io/yakworks/bookworm/jdk21.build: build/docker.io/yakworks/bookworm/core.build
 build/docker.io/yakworks/bookworm/docker-jdk21.build: build/docker.io/yakworks/bookworm/jdk21.build
 build/docker.io/yakworks/bookworm/core.build: build/docker.io/yakworks/bookworm/base.build
