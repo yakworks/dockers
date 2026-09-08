@@ -89,8 +89,11 @@ $(IMAGES_PUSH): $(REGISTRY_BUILD)/%.push:
 	# if the DOCKER_DEFAULT_PLATFORM is set then let it use that and dont use buildx
 	if [[ $${DOCKER_DEFAULT_PLATFORM:-} ]]; then
 		# assumes its built already
+		$(logr.done) "docker push $$TAG_NAME"
 		docker push "$$TAG_NAME"
 	else
+		echo "docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) \
+				 --push --platform $(PLATFORMS) -t $$TAG_NAME $*"
 		docker buildx build --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg REGISTRY=$(REGISTRY) \
 				 --push --platform $(PLATFORMS) -t $$TAG_NAME $*
 	fi
